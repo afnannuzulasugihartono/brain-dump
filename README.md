@@ -25,26 +25,19 @@ A lightweight home for thoughts, sparks, and half-formed concepts before they be
 <!-- TIMELINE:START -->
 ## 📊 Snapshot
 
-| 💡 Total ideas | 🟢 Open | ✅ Closed | 🕒 Latest capture |
+| 💡 Ideas | 🟢 Open | ✅ Closed | 🕒 Latest |
 | ---: | ---: | ---: | --- |
 | 1 | 1 | 0 | 23 Sep 2026 |
-
-## ✨ Latest spark
-
-**[#1 — Test visualization](https://github.com/afnannuzulasugihartono/brain-dump/issues/1)**  
-Captured **23 Sep 2026** · 🟢 Open
 
 ## 🧭 Idea Journey
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./assets/idea-journey-dark.gif">
-    <source media="(prefers-color-scheme: light)" srcset="./assets/idea-journey-light.gif">
-    <img alt="Brain Dump Idea Journey animated timeline" src="./assets/idea-journey-light.gif" width="100%">
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/idea-journey-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="./assets/idea-journey-light.svg">
+    <img alt="Brain Dump Idea Journey" src="./assets/idea-journey-light.svg" width="100%">
   </picture>
 </p>
-
-<sub>Soft-loop preview · full-resolution static history stays in [TIMELINE.md](TIMELINE.md).</sub>
 
 ## 💭 Latest ideas
 
