@@ -37,6 +37,10 @@ class AIContractTests(unittest.TestCase):
         self.assertIn("stop", lowered)
         self.assertIn("do not attempt an alternate write path", lowered)
 
+    def test_readme_links_to_ai_access_guide(self):
+        text = (ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertIn("[AI access](docs/ai-access.md)", text)
+
     def test_issue_template_stays_human_first_and_keeps_canonical_sections(self):
         text = (ROOT / ".github" / "ISSUE_TEMPLATE" / "idea.yml").read_text(encoding="utf-8")
         for label in ("Idea", "Why it might matter", "Initial stage", "Category", "Brain-dump rule"):
