@@ -17,6 +17,15 @@ class WorkflowContractTests(unittest.TestCase):
         self.assertIn("issues: read", text)
         self.assertNotIn("issues: write", text)
 
+    def test_authorized_collaborator_issue_events_are_allowed(self):
+        text = WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("author_association", text)
+        self.assertIn("COLLABORATOR", text)
+
+    def test_workflow_runs_repository_tests_before_generation(self):
+        text = WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("python3 -m unittest discover -s tests -v", text)
+
     def test_generated_push_refreshes_from_latest_main_before_retry(self):
         text = WORKFLOW.read_text(encoding="utf-8")
         self.assertIn("git fetch origin main", text)
