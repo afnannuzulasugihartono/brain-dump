@@ -135,7 +135,11 @@ def main():
         print("GITHUB_REPOSITORY and GITHUB_TOKEN are required.", file=sys.stderr)
         raise SystemExit(2)
 
-    issues = get_issues(repo, token)
+    owner = repo.split("/", 1)[0].lower()
+    issues = [
+        issue for issue in get_issues(repo, token)
+        if issue.get("user", {}).get("login", "").lower() == owner
+    ]
     Path("TIMELINE.md").write_text(generate(issues), encoding="utf-8")
     print(f"Generated TIMELINE.md from {len(issues)} issue(s).")
 
