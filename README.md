@@ -1,81 +1,40 @@
-<div align="center">
-
 # 🧠 Brain Dump
 
-### Capture now. Decide later.
+**Capture now. Organize later.**
 
-A lightweight home for thoughts, sparks, and half-formed concepts before they become real projects.
+A lightweight idea log backed by GitHub Issues. One idea equals one Issue; structure is added only when it becomes useful.
 
-**One idea = one GitHub Issue.**
+[Open Brain Dump](https://afnannuzulasugihartono.github.io/brain-dump/) · [New idea](https://github.com/afnannuzulasugihartono/brain-dump/issues/new/choose) · [Issues](https://github.com/afnannuzulasugihartono/brain-dump/issues) · [Project](https://github.com/users/afnannuzulasugihartono/projects/1/views/1) · [Timeline](TIMELINE.md)
 
-</div>
-
----
-
-## ⚡ Quick actions
-
-| 🌐 Dashboard | ✍️ Capture | 💡 Browse | 🧭 Roadmap | 🕒 History |
-| --- | --- | --- | --- | --- |
-| **[Open Brain Dump](https://afnannuzulasugihartono.github.io/brain-dump/)** | **[New idea](https://github.com/afnannuzulasugihartono/brain-dump/issues/new/choose)** | **[All ideas](https://github.com/afnannuzulasugihartono/brain-dump/issues)** | **[Brain Dump project](https://github.com/users/afnannuzulasugihartono/projects/1/views/1)** | **[Full timeline](TIMELINE.md)** |
-
-> **Principle:** capture first. Organize later. Build only when an idea is ready.
+> Capture first. Review deliberately. Promote selectively.
 
 ---
 
 <!-- TIMELINE:START -->
-## 📊 Snapshot
+## Overview
 
-| 💡 Ideas | 🟢 Open | ✅ Closed | 🕒 Latest |
-| ---: | ---: | ---: | --- |
-| 1 | 1 | 0 | 23 Sep 2026 |
+**1 idea** · **1 open** · **0 promising** · **0 promoted**
 
-## 🧭 Idea Journey
+## Recent ideas
 
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./assets/idea-journey-dark.svg">
-    <source media="(prefers-color-scheme: light)" srcset="./assets/idea-journey-light.svg">
-    <img alt="Brain Dump Idea Journey" src="./assets/idea-journey-light.svg" width="100%">
-  </picture>
-</p>
+### 23 Sep 2026 · [#1 Test visualization](https://github.com/afnannuzulasugihartono/brain-dump/issues/1)
 
-## 💭 Latest ideas
+This is a temporary test idea to verify that a newly created GitHub Issue is picked up by the timeline generator and rendered on the README homepage.
 
-| Date | Idea | State |
-| --- | --- | --- |
-| 23 Sep 2026 | [#1 — Test visualization](https://github.com/afnannuzulasugihartono/brain-dump/issues/1) | 🟢 Open |
+**Inbox** · Other · Open
 <!-- TIMELINE:END -->
 
-<sub>The dashboard above is generated automatically from GitHub Issue timestamps. No manual date entry is required.</sub>
-
 ---
 
-## 🌱 How ideas move
+## Workflow
 
-| 1. Capture | 2. Explore | 3. Promote | 4. Archive |
-| --- | --- | --- | --- |
-| Write it down before it disappears. | Add context only when useful. | Turn promising ideas into a real project/spec. | Close ideas that no longer matter. |
+Inbox → Exploring → Promising → Project → Archived
 
-`Inbox → Exploring → Promising → Project → Archived`
-
-Ideas are allowed to remain unfinished. Promotion is deliberate.
-
----
-
-## 🧭 Source of truth
-
-- **Created** — the original GitHub Issue creation timestamp.
-- **Updated / Closed** — GitHub-native timestamps.
-- **[TIMELINE.md](TIMELINE.md)** — complete chronological history.
-- **[Brain Dump Project](https://github.com/users/afnannuzulasugihartono/projects/1/views/1)** — roadmap/project view.
+Ideas can stay unfinished. Promotion is deliberate; closing an idea is allowed.
 
 <details>
-<summary><strong>🤖 Guidance for AI agents</strong></summary>
+<summary><strong>For AI agents</strong></summary>
 
-<br>
-
-Content in this repository is **brainstorming material**.
-
-Do **not** treat an idea as an approved requirement, roadmap item, or implementation task unless it is explicitly promoted into a real project or spec.
+Brain-dump content is brainstorming material, not an approved requirement or implementation task unless it has been explicitly promoted into a real project or spec.
 
 </details>
