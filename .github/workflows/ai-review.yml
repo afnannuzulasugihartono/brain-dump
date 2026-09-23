@@ -44,9 +44,9 @@ jobs:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
           if [ "$EVENT_NAME" = "issues" ]; then
-            python3 scripts/ai/evaluate.py --issue-number "$ISSUE_NUMBER"
+            python3 -m scripts.ai.evaluate --issue-number "$ISSUE_NUMBER"
           else
-            python3 scripts/ai/evaluate.py
+            python3 -m scripts.ai.evaluate
           fi
 
       - name: Validate AI sidecar
@@ -87,9 +87,9 @@ jobs:
             git reset --hard origin/main
             python3 -m unittest discover -s tests -v
             if [ "$EVENT_NAME" = "issues" ]; then
-              python3 scripts/ai/evaluate.py --issue-number "$ISSUE_NUMBER"
+              python3 -m scripts.ai.evaluate --issue-number "$ISSUE_NUMBER"
             else
-              python3 scripts/ai/evaluate.py
+              python3 -m scripts.ai.evaluate
             fi
             python3 scripts/validate_generated.py
             git add $GENERATED

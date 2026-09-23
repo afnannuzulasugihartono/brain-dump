@@ -49,7 +49,7 @@ jobs:
       - name: Generate Brain Dump
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python3 scripts/generate_timeline.py
+        run: python3 -m scripts.generate_timeline
 
       - name: Validate generated data
         run: python3 scripts/validate_generated.py
@@ -81,7 +81,7 @@ jobs:
             python3 -m py_compile scripts/generate_timeline.py scripts/generate/issues.py scripts/validate_generated.py
             python3 -m unittest discover -s tests -v
             node --experimental-default-type=module --test tests/frontend/scoring.test.js tests/frontend/data.test.js
-            python3 scripts/generate_timeline.py
+            python3 -m scripts.generate_timeline
             python3 scripts/validate_generated.py
             git add $GENERATED
 
