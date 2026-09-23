@@ -6,36 +6,37 @@
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#0d1117">
   <title>Brain Dump</title>
-  <meta name="description" content="A fast, lightweight home for captured ideas.">
+  <meta name="description" content="Capture now. Organize later.">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
   <header class="topbar">
     <div class="shell topbar-inner">
-      <a class="brand" href="./">
-        <span class="brand-icon">🧠</span>
-        <span><strong>Brain Dump</strong><small>Capture now. Decide later.</small></span>
+      <a class="brand" href="./" aria-label="Brain Dump home">
+        <span class="brand-mark">🧠</span>
+        <span><strong>Brain Dump</strong><small>Capture now. Organize later.</small></span>
       </a>
       <div class="top-actions">
         <button id="themeToggle" class="icon-button" type="button" aria-label="Toggle theme">◐</button>
-        <a class="primary-button" href="https://github.com/afnannuzulasugihartono/brain-dump/issues/new/choose">＋ New Idea</a>
+        <a class="new-button" href="https://github.com/afnannuzulasugihartono/brain-dump/issues/new/choose">＋ New idea</a>
       </div>
     </div>
   </header>
 
-  <main class="shell">
-    <section class="intro">
-      <p class="eyebrow">PERSONAL IDEA SYSTEM</p>
-      <h1>Catch the spark.<br><span>Find it again.</span></h1>
-      <p>A lightweight view over GitHub Issues. Capture first, organize only when useful.</p>
-    </section>
+  <main class="shell main">
+    <a class="capture" href="https://github.com/afnannuzulasugihartono/brain-dump/issues/new/choose">
+      <span class="avatar">✦</span>
+      <span class="capture-copy"><strong>Capture an idea</strong><small>Write it down before it disappears.</small></span>
+      <span class="capture-action">New issue →</span>
+    </a>
 
-    <section id="stats" class="stats" aria-label="Idea statistics"></section>
-
-    <section class="overview">
-      <article id="latestSpark" class="overview-card"></article>
-      <article id="reviewPanel" class="overview-card"></article>
-    </section>
+    <div class="summary-row">
+      <div id="summary" class="summary" aria-label="Idea statistics"></div>
+      <label class="search">
+        <span>⌕</span>
+        <input id="searchInput" type="search" placeholder="Search ideas…" autocomplete="off">
+      </label>
+    </div>
 
     <section class="workspace">
       <div class="workspace-bar">
@@ -47,7 +48,6 @@
         </nav>
 
         <div class="filters">
-          <input id="searchInput" type="search" placeholder="Search ideas…" aria-label="Search ideas">
           <select id="categoryFilter" aria-label="Filter by category"><option value="all">All categories</option></select>
           <select id="stageFilter" aria-label="Filter by stage"><option value="all">All stages</option></select>
         </div>
@@ -72,7 +72,7 @@
   </footer>
 
   <template id="emptyTemplate">
-    <div class="empty"><strong>No ideas here.</strong><span>Try another filter or capture a new thought.</span></div>
+    <div class="empty"><strong>No ideas here yet.</strong><span>Capture a new thought or change the filters.</span></div>
   </template>
 
   <script src="./app.js" defer></script>
