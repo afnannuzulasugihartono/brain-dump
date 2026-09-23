@@ -10,7 +10,8 @@ CSS = ROOT / "docs" / "styles.css"
 class StaticUITests(unittest.TestCase):
     def test_human_write_actions_link_to_github(self):
         html = HTML.read_text(encoding="utf-8")
-        self.assertIn("/issues/new/choose", html)
+        self.assertIn("/issues/new?template=idea.yml", html)
+        self.assertNotIn("/issues/new/choose", html)
         self.assertIn("New note", html)
         self.assertIn("What's on your mind?", html)
 
