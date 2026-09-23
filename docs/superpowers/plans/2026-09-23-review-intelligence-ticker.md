@@ -10,6 +10,9 @@
 
 **Spec:** docs/superpowers/specs/2026-09-23-review-intelligence-and-repo-cleanup-design.md
 
+**Implementation status (reconciled 23 September 2026):** Core implementation is merged on `main` through PRs #4–#8. Canonical Sync, production Pages, deterministic Review, ticker wiring, modular frontend, cleanup, and safe-degraded AI Review have been accepted. A final closeout pass adds explicit missing-provider/timeout/rate-limit regression coverage. Live desktop ticker behavior and a clean browser console were observed; live mobile viewport resizing and reduced-motion emulation were unavailable in the browser harness, so those remain verified through deployed CSS and regression tests. Real AI insight generation remains intentionally inactive until `AI_BASE_URL`, `AI_MODEL`, and `AI_API_KEY` are configured. Historical unchecked boxes below are retained as the original TDD execution recipe, not as the current status tracker.
+
+
 ## Global Constraints
 
 - GitHub Issues remain the sole source of truth.
