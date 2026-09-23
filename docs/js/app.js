@@ -43,10 +43,11 @@ function applyFilters() {
 
 function setView(view) {
   state.view = view;
-  $$(".tab").forEach(tab => {
-    const active = tab.dataset.view === view;
-    tab.classList.toggle("active", active);
-    tab.setAttribute("aria-selected", String(active));
+  $$(".view-link").forEach(control => {
+    const active = control.dataset.view === view;
+    control.classList.toggle("active", active);
+    if (active) control.setAttribute("aria-current", "page");
+    else control.removeAttribute("aria-current");
   });
   $$(".view").forEach(section => section.classList.remove("active"));
   $("#" + view + "View").classList.add("active");
@@ -55,7 +56,7 @@ function setView(view) {
 }
 
 async function init() {
-  initTheme($("#themeToggle"));
+  $$(".theme-toggle").forEach(initTheme);
   try {
     const data = await loadBrainDumpData();
     state.ideas = data.ideas;
@@ -68,7 +69,7 @@ async function init() {
     $("#searchInput").oninput = event => {state.query=event.target.value;applyFilters();};
     $("#categoryFilter").onchange = event => {state.category=event.target.value;applyFilters();};
     $("#stageFilter").onchange = event => {state.stage=event.target.value;applyFilters();};
-    $$(".tab").forEach(tab => tab.onclick = () => setView(tab.dataset.view));
+    $$(".view-link").forEach(control => control.onclick = () => setView(control.dataset.view));
     const requested = location.hash.slice(1);
     setView(["notes","review","board","calendar"].includes(requested) ? requested : "notes");
   } catch (error) {
