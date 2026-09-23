@@ -23,7 +23,10 @@ concurrency:
 
 jobs:
   sync:
-    if: github.event_name != 'issues' || github.event.issue.user.login == github.repository_owner
+    if: >-
+      github.event_name != 'issues' ||
+      github.event.issue.user.login == github.repository_owner ||
+      contains(fromJSON('["OWNER","COLLABORATOR","MEMBER"]'), github.event.issue.author_association)
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -32,6 +35,9 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Run tests
+        run: python3 -m unittest discover -s tests -v
 
       - name: Generate Brain Dump
         env:
@@ -62,6 +68,7 @@ jobs:
             echo "Push attempt $attempt failed; refreshing from latest main."
             git fetch origin main
             git reset --hard origin/main
+            python3 -m unittest discover -s tests -v
             python3 scripts/generate_timeline.py
             git add $GENERATED
 
