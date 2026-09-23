@@ -37,12 +37,10 @@ Captured **23 Sep 2026** · 🟢 Open
 ## 🗓️ Idea timeline
 
 ```mermaid
-gantt
-    title Brain Dump — Ideas by creation date
-    dateFormat YYYY-MM-DD
-    axisFormat %d %b %Y
+timeline
+    title Brain Dump — Idea Journey
     section Sep 2026
-    #1 Test visualization :milestone, idea1, 2026-09-23, 0d
+        23 Sep : 🟢 #1 — Test visualization
 ```
 
 ## 💭 Latest ideas
