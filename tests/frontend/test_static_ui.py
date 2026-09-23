@@ -104,6 +104,34 @@ class StaticUITests(unittest.TestCase):
         self.assertIn("@media(prefers-reduced-motion:reduce){.ticker-track{animation:none;transform:none}", compact)
         self.assertIn("@media(max-width:620px){.ticker{position:relative;", compact)
 
+    def test_desktop_uses_quiet_sidebar_instead_of_top_tabs(self):
+        html = HTML.read_text(encoding="utf-8")
+        css = all_css().replace(" ", "").replace("\n", "")
+        self.assertIn('class="sidebar"', html)
+        self.assertIn('class="sidebar-nav"', html)
+        self.assertIn('class="sidebar-new-note"', html)
+        self.assertNotIn('class="tabs"', html)
+        self.assertIn('.sidebar{position:fixed;', css)
+        self.assertIn('width:180px', css)
+
+    def test_mobile_uses_fixed_bottom_view_navigation(self):
+        html = HTML.read_text(encoding="utf-8")
+        css = all_css().replace(" ", "").replace("\n", "")
+        self.assertIn('class="mobile-nav"', html)
+        for view in ("notes", "review", "board", "calendar"):
+            self.assertGreaterEqual(html.count(f'data-view="{view}"'), 2)
+        self.assertIn('@media(max-width:620px){', css)
+        self.assertIn('.mobile-nav{display:grid;position:fixed;', css)
+        self.assertIn('padding-bottom:58px', css)
+
+    def test_app_wires_sidebar_and_mobile_view_controls(self):
+        app = (ROOT / "docs" / "js" / "app.js").read_text(encoding="utf-8")
+        compact = app.replace(" ", "").replace("\n", "")
+        self.assertIn('$$('.replace(" ", ""), compact)
+        self.assertIn('".view-link"', app)
+        self.assertIn('".theme-toggle"', app)
+        self.assertIn('aria-current', app)
+
 
 if __name__ == "__main__":
     unittest.main()
