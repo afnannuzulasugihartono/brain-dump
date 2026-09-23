@@ -14,7 +14,7 @@ A complete chronological feed generated from GitHub Issues.
 
 Brain Dump should be usable by both humans and AI without a custom backend.
 
-**Exploring** · Software · Open
+**Archived** · Software · Closed
 
 ### 23 Sep 2026 · [#1 Test visualization](https://github.com/afnannuzulasugihartono/brain-dump/issues/1)
 

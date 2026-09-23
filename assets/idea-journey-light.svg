@@ -4,7 +4,7 @@
 <rect width="100%" height="100%" rx="10" fill="#ffffff"/>
 <text x="24" y="30" fill="#24292f" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="17" font-weight="700">Brain Dump timeline</text>
 <text x="24" y="50" fill="#6e7781" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="10">Capture now. Organize later.</text>
-<text x="896" y="30" text-anchor="end" fill="#6e7781" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="9">2 IDEAS · 2 OPEN</text>
+<text x="896" y="30" text-anchor="end" fill="#6e7781" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="9">2 IDEAS · 1 OPEN</text>
 <line x1="24" y1="62" x2="896" y2="62" stroke="#d8dee4"/>
 <rect x="14" y="76" width="892" height="74" rx="8" fill="#ffffff"/>
 <text x="28" y="98" fill="#6e7781" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="9">23 Sep</text>
@@ -18,7 +18,7 @@
 <circle cx="100" cy="176" r="4" fill="#0969da"/>
 <text x="118" y="179" fill="#24292f" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="700">AI access verification</text>
 <text x="118" y="198" fill="#6e7781" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="9">Brain Dump should be usable by both humans and AI without a custom backend.</text>
-<text x="118" y="216" fill="#6e7781" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="8">EXPLORING · SOFTWARE · OPEN</text>
+<text x="118" y="216" fill="#6e7781" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="8">ARCHIVED · SOFTWARE · CLOSED</text>
 <line x1="100" y1="224" x2="896" y2="224" stroke="#d8dee4"/>
 <text x="460.0" y="254" text-anchor="middle" fill="#8c959f" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="8">Generated from GitHub Issue timestamps</text>
 </svg>
