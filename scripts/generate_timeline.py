@@ -17,6 +17,7 @@ START_MARKER = "<!-- TIMELINE:START -->"
 END_MARKER = "<!-- TIMELINE:END -->"
 ASSET_DIR = Path("assets")
 RECENT_LIMIT = 8
+TRUSTED_AUTHOR_ASSOCIATIONS = {"OWNER", "COLLABORATOR", "MEMBER"}
 
 THEMES = {
     "light": {
@@ -81,6 +82,11 @@ def parse_section(body: str, heading: str, fallback: str = "") -> str:
         return fallback
     value = match.group(1).strip()
     return value or fallback
+
+def is_trusted_issue(issue, owner: str) -> bool:
+    login = issue.get("user", {}).get("login", "").lower()
+    association = (issue.get("author_association") or "").upper()
+    return login == owner.lower() or association in TRUSTED_AUTHOR_ASSOCIATIONS
 
 def parse_issues(issues):
     parsed = []
@@ -261,7 +267,7 @@ def main():
     owner = repo.split("/", 1)[0].lower()
     issues = [
         issue for issue in get_issues(repo, token)
-        if issue.get("user", {}).get("login", "").lower() == owner
+        if is_trusted_issue(issue, owner)
     ]
     parsed = parse_issues(issues)
 
