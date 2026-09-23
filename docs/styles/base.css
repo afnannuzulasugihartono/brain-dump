@@ -1,0 +1,3 @@
+:root{--bg:#fff;--surface:#f6f8fa;--surface-hover:#f0f3f6;--border:#d8dee4;--text:#24292f;--muted:#6e7781;--faint:#8c959f;--accent:#0969da}
+[data-theme="dark"]{--bg:#0d1117;--surface:#161b22;--surface-hover:#1c2128;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--faint:#6e7681;--accent:#58a6ff}
+*{box-sizing:border-box}html{color-scheme:light dark}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:14px;line-height:1.5}a{color:inherit;text-decoration:none}button,input,select{font:inherit}button,select{cursor:pointer}.shell{width:min(760px,calc(100% - 28px));margin-inline:auto}
