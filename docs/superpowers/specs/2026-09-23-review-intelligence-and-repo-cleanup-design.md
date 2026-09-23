@@ -3,7 +3,7 @@
 Date: 2026-09-23
 Status: Implemented on main; post-merge production acceptance performed
 
-Acceptance note: desktop production behavior and browser console were observed live. Mobile ticker and reduced-motion behavior are enforced by deployed CSS plus regression tests; the final browser harness could not resize the viewport or emulate media preferences, so those two checks remain source/test-verified rather than live-emulated. Optional AI provider configuration remains absent, with safe degraded mode verified.
+Acceptance note: desktop production behavior and browser console were observed live. The production browser harness could not resize the viewport or emulate media preferences, so the closeout pass additionally exercised the checked-out production HTML/CSS in headless Chromium: at 390×844 the ticker computes to `position: relative` with no horizontal overflow, and with `prefers-reduced-motion: reduce` the media query matches, ticker animation computes to `none`, and the duplicate visual copy is hidden. Optional AI provider configuration remains absent, with safe degraded mode verified.
 
 ## 1. Purpose
 
