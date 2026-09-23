@@ -9,6 +9,8 @@
       "stage": "Inbox",
       "category": "Other",
       "why": "This is a temporary test idea to verify that a newly created GitHub Issue is picked up by the timeline generator and rendered on the README homepage.",
+      "idea": "Test the automatic Brain Dump visualization on the repository homepage.",
+      "aiNotes": "",
       "createdAt": "2026-09-23T04:35:18Z",
       "updatedAt": "2026-09-23T07:17:19Z",
       "closedAt": null
