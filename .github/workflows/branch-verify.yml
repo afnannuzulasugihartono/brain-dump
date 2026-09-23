@@ -1,0 +1,33 @@
+name: Quiet Sidebar Branch Verify
+
+on:
+  push:
+    branches: ["feat/quiet-sidebar"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+      - name: Compile Python sources
+        run: python3 -m py_compile scripts/generate_timeline.py scripts/generate/issues.py scripts/validate_generated.py scripts/ai/evaluate.py scripts/ai/providers/openai_compatible.py
+      - name: Run Python tests
+        run: python3 -m unittest discover -s tests -v
+      - name: Run frontend logic tests
+        run: node --experimental-default-type=module --test tests/frontend/scoring.test.js tests/frontend/data.test.js
+      - name: Check frontend syntax
+        run: |
+          node --check docs/js/app.js
+          node --check docs/js/data.js
+          node --check docs/js/review.js
+          node --check docs/js/scoring.js
+          node --check docs/js/theme.js
+          node --check docs/js/ticker.js
+          node --check docs/js/views.js
+      - name: Validate generated data
+        run: python3 scripts/validate_generated.py
