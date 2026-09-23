@@ -1,7 +1,9 @@
 # Brain Dump Human + AI Access Design
 
 **Date:** 23 September 2026  
-**Status:** Design approved in conversation; pending written-spec review.
+**Status:** Implemented on main; Human + AI Issue/API acceptance verified on 23 September 2026.
+
+**Supersession note:** The later Review Intelligence design replaces the former Cards secondary view with Review and moves the generated index to `docs/data/ideas.json`.
 
 ## Intent
 
@@ -36,13 +38,13 @@ AI ──read/write──> GitHub REST API
                     sync workflow
                   ┌──────┴──────┐
                   ▼             ▼
-          docs/ideas.json   README/TIMELINE
+          docs/data/ideas.json   README/TIMELINE
                   │
                   ▼
              GitHub Pages
 ```
 
-`docs/ideas.json` is a generated read index, never a write target.
+`docs/data/ideas.json` is a generated read index, never a write target.
 
 ## Human Access
 
@@ -51,7 +53,7 @@ The website remains read-only and should provide:
 - chronological notes/feed;
 - search;
 - stage/category filters;
-- secondary Cards, Board, and Calendar views when useful;
+- secondary Review, Board, and Calendar views when useful;
 - links to the canonical GitHub Issue.
 
 Create and edit actions open GitHub Issues. The public website must not perform authenticated writes.
@@ -195,7 +197,7 @@ There are no AI controls on the public website.
 
 1. Human or authenticated AI changes a GitHub Issue.
 2. Existing GitHub Actions sync runs.
-3. Generator rebuilds `docs/ideas.json`, README generated content, timeline content, and lightweight assets.
+3. Generator rebuilds `docs/data/ideas.json`, README generated content, timeline content, and lightweight assets.
 4. GitHub Pages deploys the read-only human interface.
 
 A sync failure must not change the canonical Issue data.
@@ -226,7 +228,7 @@ Likely implementation changes:
 - update `.github/ISSUE_TEMPLATE/idea.yml`;
 - update README guidance;
 - update the generator if needed;
-- refine `docs/index.html`, `docs/styles.css`, and `docs/app.js` to the approved Memos-like human design;
+- refine `docs/index.html`, `docs/js/`, and `docs/styles/` to the approved Memos-like human design;
 - change the sync workflow only if verification proves necessary.
 
 No new runtime dependency is required.
