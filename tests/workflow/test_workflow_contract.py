@@ -1,7 +1,7 @@
 from pathlib import Path
 import unittest
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 SYNC = ROOT / ".github" / "workflows" / "sync.yml"
 AI_REVIEW = ROOT / ".github" / "workflows" / "ai-review.yml"
 

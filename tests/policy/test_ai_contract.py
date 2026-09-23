@@ -1,7 +1,7 @@
 from pathlib import Path
 import unittest
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 
 
 class AIContractTests(unittest.TestCase):
@@ -9,7 +9,7 @@ class AIContractTests(unittest.TestCase):
         text = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
         self.assertIn("GitHub Issues", text)
         self.assertIn("source of truth", text.lower())
-        self.assertIn("docs/ideas.json", text)
+        self.assertIn("docs/data/ideas.json", text)
         self.assertIn("read-only", text.lower())
 
     def test_agents_enforces_project_and_archive_gates(self):
@@ -50,6 +50,19 @@ class AIContractTests(unittest.TestCase):
         for label in ("Idea", "Why it might matter", "Initial stage", "Category", "Brain-dump rule"):
             self.assertIn(f"label: {label}", text)
         self.assertNotIn("label: AI Notes", text)
+
+    def test_agents_names_generated_boundaries(self):
+        text = (ROOT / "AGENTS.md").read_text(encoding="utf-8").lower()
+        self.assertIn("docs/data/ideas.json", text)
+        self.assertIn("docs/data/ai-insights.json", text)
+        self.assertIn("do not edit", text)
+
+    def test_ai_access_documents_sidecar_recommendations(self):
+        text = (ROOT / "docs" / "ai-access.md").read_text(encoding="utf-8").lower()
+        self.assertIn("ai-insights.json", text)
+        self.assertIn("promote-candidate", text)
+        self.assertIn("consider-archive", text)
+        self.assertIn("read-only", text)
 
 
 if __name__ == "__main__":

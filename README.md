@@ -28,4 +28,4 @@ This is a temporary test idea to verify that a newly created GitHub Issue is pic
 
 Inbox → Exploring → Promising → Project → Archived
 
-GitHub Issues are the source of truth. See [AGENTS.md](AGENTS.md) for the AI write policy.
+GitHub Issues are the source of truth. Review signals are derived from Issues; optional AI insight is non-canonical. See [AGENTS.md](AGENTS.md) for the AI write policy.

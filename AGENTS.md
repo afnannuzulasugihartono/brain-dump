@@ -1,7 +1,15 @@
 # Brain Dump Agent Contract
 
 ## Source of truth
-GitHub Issues are the source of truth. `docs/ideas.json`, README summaries, timeline files, and Pages output are generated read-only views. Never write to generated data as a substitute for editing an Issue.
+GitHub Issues are the source of truth. All other representations are read-only views or source code derived from that canonical record.
+
+## Data ownership
+- Canonical data: GitHub Issues and their comments.
+- Source code: `docs/index.html`, `docs/js/`, `docs/styles/`, `scripts/`, workflow files, and tests.
+- Deterministic generated output: `docs/data/ideas.json`, the generated Recent ideas block in `README.md`, and `TIMELINE.md`.
+- AI-generated optional output: `docs/data/ai-insights.json`.
+
+Do not edit generated files manually as a substitute for changing their source. Edit the canonical Issue for idea content, or edit the relevant generator/evaluator for generated behavior.
 
 ## Before changing an idea
 Re-read the canonical Issue immediately before a material edit. Preserve all human-authored content, including content added after an earlier read.
@@ -20,6 +28,8 @@ Re-read the canonical Issue immediately before a material edit. Preserve all hum
 - Move an idea to `Archived`.
 - Close an Issue.
 - Remove or replace human-authored content.
+
+Review suggestions such as `promote-candidate` and `consider-archive` are recommendations only. They never authorize a Project promotion, archive, or close operation.
 
 ## Audit trail
 Put AI-added context under `## AI Notes` when practical. For material changes, add a short Issue comment describing what changed.

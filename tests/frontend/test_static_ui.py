@@ -1,7 +1,7 @@
 from pathlib import Path
 import unittest
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 HTML = ROOT / "docs" / "index.html"
 
 
@@ -73,7 +73,23 @@ class StaticUITests(unittest.TestCase):
         self.assertNotIn("backdrop-filter", css)
         self.assertNotIn("linear-gradient", css)
         self.assertNotIn("radial-gradient", css)
-        self.assertNotIn("@keyframes", css)
+        non_ticker = "\n".join(path.read_text(encoding="utf-8").lower() for path in (ROOT / "docs" / "styles").glob("*.css") if path.name != "ticker.css")
+        self.assertNotIn("@keyframes", non_ticker)
+
+    def test_ticker_contract(self):
+        html = HTML.read_text(encoding="utf-8")
+        ticker_path = ROOT / "docs" / "js" / "ticker.js"
+        css_path = ROOT / "docs" / "styles" / "ticker.css"
+        self.assertIn('id="ticker"', html)
+        self.assertTrue(ticker_path.exists())
+        ticker = ticker_path.read_text(encoding="utf-8")
+        css = css_path.read_text(encoding="utf-8")
+        self.assertIn("buildTickerItems", ticker)
+        self.assertIn("prefers-reduced-motion", css)
+        self.assertIn(":hover", css)
+        self.assertIn(":focus-within", css)
+        self.assertIn("@media(max-width:620px)", css)
+        self.assertIn("@keyframes ticker-scroll", css)
 
 
 if __name__ == "__main__":
