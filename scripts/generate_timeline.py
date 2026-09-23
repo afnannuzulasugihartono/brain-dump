@@ -34,59 +34,15 @@ THEMES = {
     },
 }
 
-def api_get(url: str, token: str):
-    req = urllib.request.Request(url, headers={
-        "Accept": "application/vnd.github+json",
-        "Authorization": f"Bearer {token}",
-        "X-GitHub-Api-Version": "2022-11-28",
-        "User-Agent": "brain-dump",
-    })
-    with urllib.request.urlopen(req, timeout=30) as response:
-        return json.load(response)
-
-def get_issues(repo: str, token: str):
-    issues, page = [], 1
-    while True:
-        batch = api_get(
-            f"{API}/repos/{repo}/issues?state=all&sort=created&direction=asc&per_page=100&page={page}",
-            token,
-        )
-        if not batch:
-            break
-        issues.extend(item for item in batch if "pull_request" not in item)
-        if len(batch) < 100:
-            break
-        page += 1
-    return issues
-
-def display_title(value: str) -> str:
-    title = " ".join((value or "Untitled idea").split())
-    return title[7:].strip() if title.lower().startswith("[idea] ") else title
-
-def parse_field(body: str, heading: str, fallback: str) -> str:
-    match = re.search(
-        rf"(?ims)^#{{2,6}}\s+{re.escape(heading)}\s*\n+(.+?)(?=\n#{{2,6}}\s+|\Z)",
-        body or "",
-    )
-    if not match:
-        return fallback
-    value = " ".join(match.group(1).strip().splitlines()[0].split())
-    return value or fallback
-
-def parse_section(body: str, heading: str, fallback: str = "") -> str:
-    match = re.search(
-        rf"(?ims)^#{{2,6}}\s+{re.escape(heading)}\s*\n+(.+?)(?=\n#{{2,6}}\s+|\Z)",
-        body or "",
-    )
-    if not match:
-        return fallback
-    value = match.group(1).strip()
-    return value or fallback
-
-def is_trusted_issue(issue, owner: str) -> bool:
-    login = issue.get("user", {}).get("login", "").lower()
-    association = (issue.get("author_association") or "").upper()
-    return login == owner.lower() or association in TRUSTED_AUTHOR_ASSOCIATIONS
+from scripts.generate.issues import (
+    display_title,
+    effective_stage,
+    get_issues,
+    is_trusted_issue,
+    normalize_issue,
+    parse_field,
+    parse_section,
+)
 
 def parse_issues(issues):
     parsed = []
@@ -105,11 +61,72 @@ def truncate(value: str, limit: int) -> str:
     value = " ".join((value or "").split())
     return value if len(value) <= limit else value[:limit - 1].rstrip() + "…"
 
-def effective_stage(issue) -> str:
-    stage = parse_field(issue.get("body") or "", "Initial stage", "Inbox")
-    if issue.get("state") == "closed" and stage.lower() not in {"project", "archived"}:
-        return "Archived"
-    return stage
+def generate_ideas_json(parsed):
+    ideas = [normalize_issue(issue) for _, issue in reversed(parsed)]
+    return json.dumps({"source": "GitHub Issues", "ideas": ideas}, ensure_ascii=False, indent=2) + "\n"
+
+#!/usr/bin/env python3
+"""Generate Brain Dump data, README feed, and lightweight timeline assets."""
+from __future__ import annotations
+
+import calendar
+import html
+import json
+import os
+import re
+import sys
+import urllib.request
+from datetime import datetime
+from pathlib import Path
+
+API = "https://api.github.com"
+START_MARKER = "<!-- TIMELINE:START -->"
+END_MARKER = "<!-- TIMELINE:END -->"
+ASSET_DIR = Path("assets")
+RECENT_LIMIT = 8
+TRUSTED_AUTHOR_ASSOCIATIONS = {"OWNER", "COLLABORATOR", "MEMBER"}
+
+THEMES = {
+    "light": {
+        "bg": "#ffffff", "surface": "#f6f8fa", "border": "#d8dee4",
+        "text": "#24292f", "muted": "#6e7781", "faint": "#8c959f",
+        "accent": "#0969da", "accent_soft": "#ddf4ff",
+        "green": "#1a7f37", "green_soft": "#dafbe1",
+    },
+    "dark": {
+        "bg": "#0d1117", "surface": "#161b22", "border": "#30363d",
+        "text": "#e6edf3", "muted": "#8b949e", "faint": "#6e7681",
+        "accent": "#58a6ff", "accent_soft": "#13233a",
+        "green": "#3fb950", "green_soft": "#12261a",
+    },
+}
+
+from scripts.generate.issues import (
+    display_title,
+    effective_stage,
+    get_issues,
+    is_trusted_issue,
+    normalize_issue,
+    parse_field,
+    parse_section,
+)
+
+def parse_issues(issues):
+    parsed = []
+    for issue in issues:
+        created = datetime.fromisoformat(issue["created_at"].replace("Z", "+00:00"))
+        parsed.append((created, issue))
+    return sorted(parsed, key=lambda item: item[0])
+
+def human_date(value: datetime) -> str:
+    return f"{value.day} {calendar.month_abbr[value.month]} {value.year}"
+
+def escape_md(value: str) -> str:
+    return value.replace("|", "\\|").replace("\n", " ")
+
+def truncate(value: str, limit: int) -> str:
+    value = " ".join((value or "").split())
+    return value if len(value) <= limit else value[:limit - 1].rstrip() + "…"
 
 def generate_ideas_json(parsed):
     ideas = []

@@ -95,6 +95,23 @@ Personal
         self.assertFalse(is_trusted_issue(outsider_issue, "afnan"))
 
 
+
+    def test_new_canonical_issue_module_and_output_path_exist(self):
+        self.assertTrue((ROOT / "scripts" / "generate" / "issues.py").exists())
+        source = (ROOT / "scripts" / "generate_timeline.py").read_text(encoding="utf-8")
+        self.assertIn('Path("docs/data/ideas.json")', source)
+        self.assertNotIn('Path("docs/ideas.json")', source)
+
+    def test_normalize_issue_exposes_canonical_fields(self):
+        from scripts.generate.issues import normalize_issue
+        item = normalize_issue(issue())
+        self.assertEqual(item["number"], 7)
+        self.assertEqual(item["title"], "Human + AI access")
+        self.assertEqual(item["stage"], "Exploring")
+        self.assertEqual(item["category"], "Software")
+        self.assertEqual(item["idea"], "Keep the original human idea.")
+        self.assertEqual(item["aiNotes"], "First line.\nSecond line.")
+
 class HomeGenerationTests(unittest.TestCase):
     def test_home_avoids_dashboard_marketing_language(self):
         parsed = [(parse_iso("2026-09-23T07:00:00Z"), issue())]
