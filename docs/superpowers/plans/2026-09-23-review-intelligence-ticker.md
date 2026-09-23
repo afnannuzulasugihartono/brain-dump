@@ -312,6 +312,7 @@ git commit -m "feat: add deterministic review scoring"
 - Create: docs/styles/base.css, app.css, review.css
 - Modify: docs/index.html
 - Modify: tests/test_static_ui.py
+- Create: tests/frontend/data.test.js
 - Delete after GREEN: docs/app.js, docs/styles.css
 
 **Interfaces:**
@@ -378,11 +379,66 @@ export async function loadBrainDumpData() {
 }
 ~~~
 
-- [ ] **Step 3: Extract current Notes/Board/Calendar behavior into views.js**
+- [ ] **Step 3: Add and pass optional-sidecar resilience test**
+
+Create tests/frontend/data.test.js:
+
+~~~javascript
+import test from "node:test";
+import assert from "node:assert/strict";
+import {loadBrainDumpData} from "../../docs/js/data.js";
+
+test("missing AI sidecar does not block canonical ideas", async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async url => {
+    if (String(url).includes("ideas.json")) {
+      return {ok:true, json:async () => ({ideas:[{
+        number:1, title:"One", createdAt:"2026-09-01T00:00:00Z"
+      }]})};
+    }
+    throw new Error("sidecar unavailable");
+  };
+  try {
+    const result = await loadBrainDumpData();
+    assert.equal(result.ideas.length, 1);
+    assert.equal(result.insightsByIssue.size, 0);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("invalid AI sidecar shape degrades to no insights", async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async url => {
+    if (String(url).includes("ideas.json")) {
+      return {ok:true, json:async () => ({ideas:[{
+        number:1, title:"One", createdAt:"2026-09-01T00:00:00Z"
+      }]})};
+    }
+    return {ok:true, json:async () => ({insights:"invalid"})};
+  };
+  try {
+    const result = await loadBrainDumpData();
+    assert.equal(result.insightsByIssue.size, 0);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+~~~
+
+Run:
+
+~~~bash
+node --experimental-default-type=module --test tests/frontend/data.test.js
+~~~
+
+Expected: PASS after Step 2 data.js implementation.
+
+- [ ] **Step 4: Extract current Notes/Board/Calendar behavior into views.js**
 
 Export esc, tag, dateParts, ideaCard, renderNotes, renderBoard, renderCalendar. Copy the current rendering behavior, replacing global state reads with explicit function arguments. Keep current visual wording such as View on GitHub.
 
-- [ ] **Step 4: Implement Review UI**
+- [ ] **Step 5: Implement Review UI**
 
 docs/js/review.js imports scoring.js and views.js. It must:
 - order Needs Review by longest untouched;
@@ -410,7 +466,7 @@ const worth = ideas
 const rediscovered = selectRediscovery(ideas, now);
 ~~~
 
-- [ ] **Step 5: Create small app.js and theme.js**
+- [ ] **Step 6: Create small app.js and theme.js**
 
 app.js owns only state, filters, active-view routing, and calls into imported modules. State:
 
@@ -431,7 +487,7 @@ Allowed hashes: notes, review, board, calendar. Unknown hash falls back to notes
 
 Canonical data load failure renders Could not load notes plus a link to GitHub Issues.
 
-- [ ] **Step 6: Update index.html and split CSS**
+- [ ] **Step 7: Update index.html and split CSS**
 
 index.html:
 - Cards tab → Review tab;
@@ -441,7 +497,7 @@ index.html:
 
 base.css receives variables/reset/global control styles. app.css receives current topbar/composer/search/tabs/Notes/Board/Calendar/footer styles. review.css stays editorial: thin borders, restrained typography, no KPI cards/charts/gradients/blur.
 
-- [ ] **Step 7: Verify and remove old monoliths**
+- [ ] **Step 8: Verify and remove old monoliths**
 
 ~~~bash
 python3 -m unittest tests.test_static_ui -v
@@ -450,7 +506,7 @@ node --check docs/js/data.js
 node --check docs/js/views.js
 node --check docs/js/review.js
 node --check docs/js/theme.js
-node --experimental-default-type=module --test tests/frontend/scoring.test.js
+node --experimental-default-type=module --test tests/frontend/scoring.test.js tests/frontend/data.test.js
 ~~~
 
 Expected: PASS, then:
@@ -530,7 +586,7 @@ Mobile <=620px:
 - no persistent body padding;
 - ticker follows footer content.
 
-- [ ] **Step 5: Verify and commit**
+- [ ] **Step 6: Verify and commit**
 
 ~~~bash
 python3 -m unittest tests.test_static_ui -v
@@ -553,6 +609,7 @@ git commit -m "feat: add adaptive Brain Dump ticker"
 - Modify/generated: docs/data/ai-insights.json
 
 **Interfaces:**
+- parse_provider_content(content: str) -> dict
 - request_insight(idea, base_url, api_key, model, timeout=30) -> dict
 - validate_insight(candidate, issue_number, evaluated_at) -> dict
 - merge_insights(existing, updates) -> list[dict]
@@ -593,16 +650,44 @@ python3 -m unittest tests.test_ai_evaluate -v
 
 Expected: FAIL.
 
-- [ ] **Step 3: Implement OpenAI-compatible provider boundary**
+- [ ] **Step 3: Pin malformed provider JSON behavior**
+
+Add to tests/test_ai_evaluate.py:
+
+~~~python
+import json
+from scripts.ai.providers.openai_compatible import parse_provider_content
+
+def test_markdown_fenced_provider_json_is_rejected(self):
+    with self.assertRaises(json.JSONDecodeError):
+        parse_provider_content('~~~json\n{"issueNumber":7}\n~~~')
+~~~
+
+Run:
+
+~~~bash
+python3 -m unittest tests.test_ai_evaluate -v
+~~~
+
+Expected: FAIL because provider parser does not exist.
+
+- [ ] **Step 4: Implement OpenAI-compatible provider boundary**
 
 Use urllib.request only. Endpoint = AI_BASE_URL.rstrip("/") + "/chat/completions". Send model, temperature 0.2, system instruction, and JSON-serialized idea.
 
 System instruction must allow only:
 keep-exploring, revisit, promote-candidate, consider-archive.
 
-Parse response content with json.loads directly. Markdown-fenced/non-JSON output is invalid and must not be silently repaired.
+Expose:
 
-- [ ] **Step 4: Implement evaluator and degraded mode**
+~~~python
+def parse_provider_content(content: str) -> dict:
+    return json.loads(content.strip())
+~~~
+
+request_insight must call parse_provider_content on the model response. Markdown-fenced/non-JSON output is invalid and must not be silently repaired.
+
+- [ ] **Step 5: Implement evaluator and degraded mode**
 
 evaluate.py must:
 - validate Issue number, summary, list[str] signals, action whitelist, confidence 0..1, depth brief/detailed;
