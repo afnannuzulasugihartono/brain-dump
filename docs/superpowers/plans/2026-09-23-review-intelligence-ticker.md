@@ -586,7 +586,7 @@ Mobile <=620px:
 - no persistent body padding;
 - ticker follows footer content.
 
-- [ ] **Step 6: Verify and commit**
+- [ ] **Step 5: Verify and commit**
 
 ~~~bash
 python3 -m unittest tests.test_static_ui -v
@@ -699,7 +699,7 @@ evaluate.py must:
 - atomically replace docs/data/ai-insights.json only after validation;
 - support --issue-number N for Issue events and no argument for batch daily/manual mode.
 
-- [ ] **Step 5: Verify and commit**
+- [ ] **Step 6: Verify and commit**
 
 ~~~bash
 python3 -m unittest tests.test_ai_evaluate tests.test_validate_generated -v
