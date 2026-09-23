@@ -39,16 +39,43 @@ jobs:
         run: python3 scripts/generate_timeline.py
 
       - name: Commit generated content when changed
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md TIMELINE.md docs/ideas.json assets/idea-journey-light.svg assets/idea-journey-dark.svg
+
+          GENERATED="README.md TIMELINE.md docs/ideas.json assets/idea-journey-light.svg assets/idea-journey-dark.svg"
+          git add $GENERATED
           if git diff --cached --quiet; then
             echo "Generated content unchanged."
-          else
-            git commit -m "docs: sync brain dump"
-            git push
+            exit 0
           fi
+
+          git commit -m "docs: sync brain dump"
+
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+
+            echo "Push attempt $attempt failed; refreshing from latest main."
+            git fetch origin main
+            git reset --hard origin/main
+            python3 scripts/generate_timeline.py
+            git add $GENERATED
+
+            if git diff --cached --quiet; then
+              echo "Latest main already contains equivalent generated content."
+              exit 0
+            fi
+
+            git commit -m "docs: sync brain dump"
+            sleep $((attempt * 2))
+          done
+
+          echo "Could not push generated content after 3 attempts."
+          exit 1
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
