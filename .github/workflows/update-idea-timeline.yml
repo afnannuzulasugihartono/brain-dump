@@ -34,7 +34,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add TIMELINE.md README.md assets/idea-journey-light.svg assets/idea-journey-dark.svg assets/idea-journey-light.gif assets/idea-journey-dark.gif
+          git add TIMELINE.md README.md docs/ideas.json assets/idea-journey-light.svg assets/idea-journey-dark.svg assets/idea-journey-light.gif assets/idea-journey-dark.gif
           if git diff --cached --quiet; then
             echo "Timeline unchanged."
             exit 0
