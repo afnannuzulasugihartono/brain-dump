@@ -1,5 +1,5 @@
 name: New idea
-description: Capture an idea quickly before it gets lost.
+description: Add a note or idea.
 title: "[Idea] "
 body:
   - type: textarea
@@ -7,7 +7,7 @@ body:
     attributes:
       label: Idea
       description: Write the idea in the simplest form possible.
-      placeholder: What came to mind?
+      placeholder: What's on your mind?
     validations:
       required: true
 
