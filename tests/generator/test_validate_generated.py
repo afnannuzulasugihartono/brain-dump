@@ -24,6 +24,12 @@ def canonical_idea(**overrides):
 
 
 class GeneratedValidationTests(unittest.TestCase):
+    def test_checked_in_ai_sidecar_is_valid_json_and_schema(self):
+        import json
+        from scripts.validate_generated import validate_insights_document
+        data = json.loads((ROOT / "docs" / "data" / "ai-insights.json").read_text(encoding="utf-8"))
+        validate_insights_document(data)
+
     def test_validator_module_exists(self):
         self.assertTrue((ROOT / "scripts" / "validate_generated.py").exists())
 
