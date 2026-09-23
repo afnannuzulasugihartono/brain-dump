@@ -95,4 +95,3 @@ def normalize_issue(issue: dict) -> dict:
         "updatedAt": issue.get("updated_at") or issue["created_at"],
         "closedAt": issue.get("closed_at"),
     }
-}
