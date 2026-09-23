@@ -2,6 +2,7 @@ import json
 import os
 import unittest
 from unittest.mock import patch
+from urllib.error import HTTPError
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -72,7 +73,7 @@ class AIReviewTests(unittest.TestCase):
         idea = {"number":7,"title":"Idea"}
 
         def rate_limit(*args, **kwargs):
-            raise RuntimeError("HTTP 429 Too Many Requests")
+            raise HTTPError("https://example.test", 429, "Too Many Requests", None, None)
 
         merged, updated = evaluate_ideas(
             [idea], [old],
