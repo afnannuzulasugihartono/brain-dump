@@ -18,7 +18,7 @@
 <circle cx="100" cy="176" r="4" fill="#0969da"/>
 <text x="118" y="179" fill="#24292f" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="700">AI access verification</text>
 <text x="118" y="198" fill="#6e7781" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="9">Brain Dump should be usable by both humans and AI without a custom backend.</text>
-<text x="118" y="216" fill="#6e7781" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="8">INBOX · SOFTWARE · OPEN</text>
+<text x="118" y="216" fill="#6e7781" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="8">EXPLORING · SOFTWARE · OPEN</text>
 <line x1="100" y1="224" x2="896" y2="224" stroke="#d8dee4"/>
 <text x="460.0" y="254" text-anchor="middle" fill="#8c959f" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="8">Generated from GitHub Issue timestamps</text>
 </svg>
