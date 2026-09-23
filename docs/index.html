@@ -7,63 +7,30 @@
   <meta name="theme-color" content="#0d1117">
   <title>Brain Dump</title>
   <meta name="description" content="Notes and ideas backed by GitHub Issues.">
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles/base.css">
+  <link rel="stylesheet" href="./styles/app.css">
+  <link rel="stylesheet" href="./styles/review.css">
+  <link rel="stylesheet" href="./styles/ticker.css">
 </head>
 <body>
   <header class="topbar">
     <div class="shell topbar-inner">
       <a class="brand" href="./" aria-label="Brain Dump home"><strong>Brain Dump</strong></a>
-      <div class="top-actions">
-        <button id="themeToggle" class="icon-button" type="button" aria-label="Toggle theme">◐</button>
-        <a class="new-button" href="https://github.com/afnannuzulasugihartono/brain-dump/issues/new?template=idea.yml">New note</a>
-      </div>
+      <div class="top-actions"><button id="themeToggle" class="icon-button" type="button" aria-label="Toggle theme">◐</button><a class="new-button" href="https://github.com/afnannuzulasugihartono/brain-dump/issues/new?template=idea.yml">New note</a></div>
     </div>
   </header>
-
   <main class="shell main">
-    <a class="composer" href="https://github.com/afnannuzulasugihartono/brain-dump/issues/new?template=idea.yml">
-      <span>What's on your mind?</span>
-      <small>Write a note…</small>
-    </a>
-
-    <div class="tools">
-      <label class="search">
-        <span aria-hidden="true">⌕</span>
-        <input id="searchInput" type="search" placeholder="Search" autocomplete="off" aria-label="Search ideas">
-      </label>
-      <div class="filters">
-        <select id="categoryFilter" aria-label="Filter by category"><option value="all">Category</option></select>
-        <select id="stageFilter" aria-label="Filter by stage"><option value="all">Stage</option></select>
-      </div>
-    </div>
-
-    <nav class="tabs" aria-label="Idea views">
-      <button class="tab active" data-view="notes">Notes</button>
-      <button class="tab" data-view="cards">Cards</button>
-      <button class="tab" data-view="board">Board</button>
-      <button class="tab" data-view="calendar">Calendar</button>
-    </nav>
-
+    <a class="composer" href="https://github.com/afnannuzulasugihartono/brain-dump/issues/new?template=idea.yml"><span>What's on your mind?</span><small>Write a note…</small></a>
+    <div class="tools"><label class="search"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Search" autocomplete="off" aria-label="Search ideas"></label><div class="filters"><select id="categoryFilter" aria-label="Filter by category"><option value="all">Category</option></select><select id="stageFilter" aria-label="Filter by stage"><option value="all">Stage</option></select></div></div>
+    <nav class="tabs" aria-label="Idea views" role="tablist"><button class="tab active" data-view="notes" role="tab" aria-selected="true">Notes</button><button class="tab" data-view="review" role="tab" aria-selected="false">Review</button><button class="tab" data-view="board" role="tab" aria-selected="false">Board</button><button class="tab" data-view="calendar" role="tab" aria-selected="false">Calendar</button></nav>
     <p id="activeFilters" class="filter-note" hidden></p>
-
     <section id="notesView" class="view active"></section>
-    <section id="cardsView" class="view"></section>
+    <section id="reviewView" class="view"></section>
     <section id="boardView" class="view"></section>
     <section id="calendarView" class="view"></section>
   </main>
-
-  <footer class="shell footer">
-    <nav aria-label="Brain Dump links">
-      <a href="https://github.com/afnannuzulasugihartono/brain-dump/issues">Issues</a>
-      <a href="https://github.com/users/afnannuzulasugihartono/projects/1/views/1">Project</a>
-      <a href="https://github.com/afnannuzulasugihartono/brain-dump">Repository</a>
-    </nav>
-  </footer>
-
-  <template id="emptyTemplate">
-    <div class="empty"><strong>No notes yet.</strong><span>Try another filter or jot something down.</span></div>
-  </template>
-
-  <script src="./app.js" defer></script>
+  <footer class="shell footer"><nav aria-label="Brain Dump links"><a href="https://github.com/afnannuzulasugihartono/brain-dump/issues">Issues</a><a href="https://github.com/users/afnannuzulasugihartono/projects/1/views/1">Project</a><a href="https://github.com/afnannuzulasugihartono/brain-dump">Repository</a></nav></footer>
+  <aside id="ticker" class="ticker" aria-label="Brain Dump status" tabindex="0"></aside>\n  <template id="emptyTemplate"><div class="empty"><strong>No notes yet.</strong><span>Try another filter or jot something down.</span></div></template>
+  <script type="module" src="./js/app.js"></script>
 </body>
 </html>

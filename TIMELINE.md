@@ -2,12 +2,6 @@
 
 A complete chronological feed generated from GitHub Issues.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./assets/idea-journey-dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="./assets/idea-journey-light.svg">
-  <img alt="Brain Dump timeline" src="./assets/idea-journey-light.svg" width="100%">
-</picture>
-
 ## All ideas
 
 ### 23 Sep 2026 · [#3 AI access verification](https://github.com/afnannuzulasugihartono/brain-dump/issues/3)

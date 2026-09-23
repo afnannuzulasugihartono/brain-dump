@@ -1,10 +1,10 @@
 # AI access to Brain Dump
 
-GitHub Issues are the only authoritative write surface for Brain Dump. AI agents use the official GitHub REST API and GitHub authentication; `docs/ideas.json` is a generated, read-only discovery index.
+GitHub Issues are the only authoritative write surface for Brain Dump. AI agents use the official GitHub REST API and GitHub authentication; `docs/data/ideas.json` is a generated, read-only discovery index.
 
 ## Authentication
 
-Use a GitHub credential that has access to this repository and permission to read/write Issues. Never place the credential in an Issue, repository file, or client-side JavaScript.
+Use a GitHub credential that has access to this repository and permission to read/write Issues. Never place the credential in an Issue, repository file, generated JSON, or client-side JavaScript.
 
 Example read request:
 
@@ -26,7 +26,7 @@ Brain Dump syncs Issues authored by the repository owner or an account GitHub id
 - `GET /repos/{owner}/{repo}/issues/{issue_number}`
 - `GET /repos/{owner}/{repo}/issues/{issue_number}/comments`
 
-For fast discovery an agent may read `docs/ideas.json`, but it must re-read the canonical Issue before a material update.
+For fast discovery an agent may read `docs/data/ideas.json`, but it must re-read the canonical Issue before a material update.
 
 ## Write endpoints
 
@@ -62,7 +62,7 @@ Add AI-provided context, clarification, or research here.
 
 ## Safe update algorithm
 
-Before any material PATCH:
+Before any material PATCH, re-read the canonical Issue and merge from that fresh state:
 
 1. `GET` the Issue again immediately before editing.
 2. Parse the current sections from that fresh response.
@@ -81,7 +81,7 @@ An AI may move an idea through:
 
 Moving an idea to `Project` requires explicit user instruction for that idea.
 
-Moving an idea to `Archived` or closing the Issue also requires explicit user instruction. Without that instruction, the AI may only recommend archive/close in a comment.
+Moving an idea to `Archived` or closing the Issue also requires explicit user instruction. Without that instruction, the AI may only recommend archive/close.
 
 ## Audit comments
 
@@ -107,6 +107,16 @@ Use `POST /repos/{owner}/{repo}/issues` with a body like:
 }
 ```
 
+## Review intelligence
+
+The public Brain Dump website is **read-only**. Its Review view derives deterministic, explainable scoring directly in the browser from `docs/data/ideas.json`; that score is not an AI judgment.
+
+Optional AI analysis is stored separately in `docs/data/ai-insights.json`. The sidecar may be missing, stale, or unavailable without changing canonical Issue data or blocking Notes, Review, Board, Calendar, search, filters, or the ticker.
+
+AI Review may recommend `keep-exploring`, `revisit`, `promote-candidate`, or `consider-archive`. These are recommendations only. `promote-candidate` does not authorize moving an Issue to Project, and `consider-archive` does not authorize archiving or closing it. The stage rules above remain authoritative.
+
+AI provider credentials belong only in GitHub-managed Actions secrets/variables. Never place provider credentials in Issues, repository files, generated JSON, or client-side JavaScript.
+
 ## Generated data
 
-`docs/ideas.json`, README summaries, timeline files, and GitHub Pages are generated read views. Do not edit them as a substitute for editing the Issue.
+`docs/data/ideas.json`, `docs/data/ai-insights.json`, README summaries, timeline files, and GitHub Pages are generated read views. Do not edit them as a substitute for editing the Issue or changing the generator/evaluator that owns the output.
