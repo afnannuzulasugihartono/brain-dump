@@ -2,6 +2,7 @@ import {loadBrainDumpData} from "./data.js";
 import {renderNotes, renderBoard, renderCalendar, esc} from "./views.js";
 import {renderReview} from "./review.js";
 import {initTheme} from "./theme.js";
+import {buildTickerItems, renderTicker} from "./ticker.js";
 
 const state={ideas:[],filtered:[],insightsByIssue:new Map(),view:"notes",query:"",category:"all",stage:"all",calendarDate:new Date()};
 const $=selector=>document.querySelector(selector);
@@ -60,6 +61,7 @@ async function init() {
     state.ideas = data.ideas;
     state.filtered = [...data.ideas];
     state.insightsByIssue = data.insightsByIssue;
+    renderTicker($("#ticker"), buildTickerItems(state.ideas, state.insightsByIssue));
     if (state.ideas[0]) state.calendarDate = new Date(state.ideas[0].createdAt);
     fillSelect("#categoryFilter", state.ideas.map(item => item.category));
     fillSelect("#stageFilter", state.ideas.map(item => item.stage));
