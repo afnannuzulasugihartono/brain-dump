@@ -30,7 +30,7 @@ def validate_insight(candidate: dict, issue_number: int, evaluated_at: str) -> d
     if not isinstance(signals, list) or not all(isinstance(item, str) for item in signals):
         raise ValueError("signals must be a list of strings")
     confidence = candidate.get("confidence")
-    if not isinstance(confidence, (int, float)) or not 0 <= confidence <= 1:
+    if not isinstance(confidence, (int, float)) or isinstance(confidence, bool) or not 0 <= confidence <= 1:
         raise ValueError("invalid confidence")
     depth = candidate.get("depth")
     if depth not in ALLOWED_DEPTHS:

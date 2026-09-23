@@ -6,7 +6,12 @@ const utcDay = value => Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), va
 
 export function ageDays(fromIso, now = new Date()) {
   const from = new Date(fromIso);
-  return Math.floor((utcDay(now) - utcDay(from)) / DAY_MS);
+  return Math.floor((now.getTime() - from.getTime()) / DAY_MS);
+}
+
+function isSameUtcDay(iso, now = new Date()) {
+  const value = new Date(iso);
+  return utcDay(value) === utcDay(now);
 }
 
 export function needsReview(idea, now = new Date()) {
@@ -34,7 +39,7 @@ export function selectRediscovery(ideas, now = new Date()) {
   const candidates = ideas
     .filter(idea => String(idea.stage || "").toLowerCase() !== "archived")
     .filter(idea => ageDays(idea.createdAt, now) >= 7)
-    .filter(idea => ageDays(idea.updatedAt, now) > 0)
+    .filter(idea => !isSameUtcDay(idea.updatedAt, now))
     .sort((a,b) => a.number - b.number);
   if (!candidates.length) return null;
   const key = [now.getUTCFullYear(), String(now.getUTCMonth()+1).padStart(2,"0"), String(now.getUTCDate()).padStart(2,"0")].join("-");

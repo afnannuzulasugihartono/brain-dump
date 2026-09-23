@@ -8,7 +8,7 @@ export function buildTickerItems(ideas, insightsByIssue, now=new Date()) {
     `${ideas.length} idea${ideas.length === 1 ? "" : "s"}`,
     `${open} open`,
     `${due} review due`,
-    "GitHub synced",
+    "GitHub Issues source",
   ];
   ideas.slice(0, 4).forEach(idea => {
     items.push(idea.title);

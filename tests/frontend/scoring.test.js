@@ -27,6 +27,13 @@ test("scoring module exposes review functions", async () => {
   assert.equal(typeof mod?.selectRediscovery, "function");
 });
 
+test("needs review requires full elapsed days, not just UTC date boundaries", async () => {
+  const {needsReview} = await scoring() ?? {};
+  const almostSevenDays = idea({updatedAt:"2026-09-16T23:59:00Z"});
+  const earlyNow = new Date("2026-09-23T00:01:00Z");
+  assert.equal(needsReview(almostSevenDays, earlyNow).due, false);
+});
+
 test("thresholds are inclusive and stage specific", async () => {
   const {needsReview} = await scoring() ?? {};
   assert.equal(typeof needsReview, "function");
