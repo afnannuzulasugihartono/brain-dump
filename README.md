@@ -31,7 +31,7 @@ A lightweight home for thoughts, sparks, and half-formed concepts before they be
 
 ## ✨ Latest spark
 
-**[#1 — [Idea] Test visualization](https://github.com/afnannuzulasugihartono/brain-dump/issues/1)**  
+**[#1 — Test visualization](https://github.com/afnannuzulasugihartono/brain-dump/issues/1)**  
 Captured **23 Sep 2026** · 🟢 Open
 
 ## 🗓️ Idea timeline
@@ -42,14 +42,14 @@ gantt
     dateFormat YYYY-MM-DD
     axisFormat %d %b %Y
     section Sep 2026
-    #1 [Idea] Test visualization :milestone, idea1, 2026-09-23, 0d
+    #1 Test visualization :milestone, idea1, 2026-09-23, 0d
 ```
 
 ## 💭 Latest ideas
 
 | Date | Idea | State |
 | --- | --- | --- |
-| 23 Sep 2026 | [#1 [Idea] Test visualization](https://github.com/afnannuzulasugihartono/brain-dump/issues/1) | 🟢 Open |
+| 23 Sep 2026 | [#1 — Test visualization](https://github.com/afnannuzulasugihartono/brain-dump/issues/1) | 🟢 Open |
 <!-- TIMELINE:END -->
 
 <sub>The dashboard above is generated automatically from GitHub Issue timestamps. No manual date entry is required.</sub>
