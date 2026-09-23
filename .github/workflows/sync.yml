@@ -8,7 +8,8 @@ on:
     paths:
       - "docs/**"
       - "scripts/**"
-      - ".github/workflows/sync-brain-dump.yml"
+      - "tests/**"
+      - ".github/workflows/sync.yml"
   workflow_dispatch:
 
 permissions:
@@ -36,13 +37,19 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Run tests
+      - name: Run Python tests
         run: python3 -m unittest discover -s tests -v
+
+      - name: Run frontend logic tests
+        run: node --experimental-default-type=module --test tests/frontend/scoring.test.js tests/frontend/data.test.js
 
       - name: Generate Brain Dump
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python3 scripts/generate_timeline.py
+
+      - name: Validate generated data
+        run: python3 scripts/validate_generated.py
 
       - name: Commit generated content when changed
         env:
@@ -51,7 +58,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          GENERATED="README.md TIMELINE.md docs/ideas.json assets/idea-journey-light.svg assets/idea-journey-dark.svg"
+          GENERATED="README.md TIMELINE.md docs/data/ideas.json"
           git add $GENERATED
           if git diff --cached --quiet; then
             echo "Generated content unchanged."
@@ -69,7 +76,9 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             python3 -m unittest discover -s tests -v
+            node --experimental-default-type=module --test tests/frontend/scoring.test.js tests/frontend/data.test.js
             python3 scripts/generate_timeline.py
+            python3 scripts/validate_generated.py
             git add $GENERATED
 
             if git diff --cached --quiet; then
@@ -83,6 +92,9 @@ jobs:
 
           echo "Could not push generated content after 3 attempts."
           exit 1
+
+      - name: Validate generated data before deploy
+        run: python3 scripts/validate_generated.py
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

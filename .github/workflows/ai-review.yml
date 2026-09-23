@@ -1,0 +1,113 @@
+name: AI Review
+
+on:
+  issues:
+    types: [opened, edited]
+  schedule:
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: read
+  actions: write
+
+concurrency:
+  group: brain-dump-ai-review
+  cancel-in-progress: true
+
+jobs:
+  review:
+    if: >-
+      github.event_name != 'issues' ||
+      github.event.issue.user.login == github.repository_owner ||
+      contains(fromJSON('["OWNER","COLLABORATOR","MEMBER"]'), github.event.issue.author_association)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Run repository tests
+        run: python3 -m unittest discover -s tests -v
+
+      - name: Evaluate ideas
+        env:
+          AI_BASE_URL: ${{ vars.AI_BASE_URL }}
+          AI_MODEL: ${{ vars.AI_MODEL }}
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          EVENT_NAME: ${{ github.event_name }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          if [ "$EVENT_NAME" = "issues" ]; then
+            python3 scripts/ai/evaluate.py --issue-number "$ISSUE_NUMBER"
+          else
+            python3 scripts/ai/evaluate.py
+          fi
+
+      - name: Validate AI sidecar
+        run: python3 scripts/validate_generated.py
+
+      - name: Commit AI insight when changed
+        id: commit
+        env:
+          AI_BASE_URL: ${{ vars.AI_BASE_URL }}
+          AI_MODEL: ${{ vars.AI_MODEL }}
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          EVENT_NAME: ${{ github.event_name }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          echo "changed=false" >> "$GITHUB_OUTPUT"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          GENERATED="docs/data/ai-insights.json"
+          git add $GENERATED
+          if git diff --cached --quiet; then
+            echo "AI insight unchanged."
+            exit 0
+          fi
+
+          git commit -m "docs: sync AI review"
+
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then
+              echo "changed=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
+            echo "Push attempt $attempt failed; refreshing from latest main."
+            git fetch origin main
+            git reset --hard origin/main
+            python3 -m unittest discover -s tests -v
+            if [ "$EVENT_NAME" = "issues" ]; then
+              python3 scripts/ai/evaluate.py --issue-number "$ISSUE_NUMBER"
+            else
+              python3 scripts/ai/evaluate.py
+            fi
+            python3 scripts/validate_generated.py
+            git add $GENERATED
+
+            if git diff --cached --quiet; then
+              echo "Latest main already contains equivalent AI insight."
+              exit 0
+            fi
+
+            git commit -m "docs: sync AI review"
+            sleep $((attempt * 2))
+          done
+
+          echo "Could not push AI insight after 3 attempts."
+          exit 1
+
+      - name: Deploy changed AI insight through canonical sync
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run sync.yml --ref main
