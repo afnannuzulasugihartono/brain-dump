@@ -41,6 +41,10 @@ class AIContractTests(unittest.TestCase):
         text = (ROOT / "README.md").read_text(encoding="utf-8")
         self.assertIn("[AI access](docs/ai-access.md)", text)
 
+    def test_blank_issues_are_disabled_for_human_capture(self):
+        text = (ROOT / ".github" / "ISSUE_TEMPLATE" / "config.yml").read_text(encoding="utf-8")
+        self.assertIn("blank_issues_enabled: false", text)
+
     def test_issue_template_stays_human_first_and_keeps_canonical_sections(self):
         text = (ROOT / ".github" / "ISSUE_TEMPLATE" / "idea.yml").read_text(encoding="utf-8")
         for label in ("Idea", "Why it might matter", "Initial stage", "Category", "Brain-dump rule"):
