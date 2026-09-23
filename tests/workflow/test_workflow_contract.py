@@ -34,6 +34,14 @@ class WorkflowContractTests(unittest.TestCase):
         self.assertIn("python3 -m py_compile", text)
         self.assertIn("scripts/generate/issues.py", text)
 
+    def test_python_package_entrypoints_use_module_invocation(self):
+        sync = SYNC.read_text(encoding="utf-8")
+        ai = AI_REVIEW.read_text(encoding="utf-8")
+        self.assertIn("python3 -m scripts.generate_timeline", sync)
+        self.assertNotIn("python3 scripts/generate_timeline.py", sync)
+        self.assertIn("python3 -m scripts.ai.evaluate", ai)
+        self.assertNotIn("python3 scripts/ai/evaluate.py", ai)
+
     def test_sync_retry_refreshes_latest_main(self):
         text = SYNC.read_text(encoding="utf-8")
         self.assertIn("git fetch origin main", text)
@@ -46,7 +54,7 @@ class WorkflowContractTests(unittest.TestCase):
             self.assertIn(value, text)
         self.assertIn("opened", text)
         self.assertIn("edited", text)
-        self.assertIn("python3 scripts/ai/evaluate.py", text)
+        self.assertIn("python3 -m scripts.ai.evaluate", text)
 
     def test_ai_review_has_no_issue_write_permission_and_owns_only_sidecar(self):
         text = AI_REVIEW.read_text(encoding="utf-8")
