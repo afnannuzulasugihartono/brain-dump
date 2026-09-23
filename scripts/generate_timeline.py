@@ -484,6 +484,37 @@ def generate_gif(parsed, theme_name: str, output_path: Path):
         disposal=2,
     )
 
+def generate_ideas_json(parsed):
+    ideas = []
+    for created, issue in reversed(parsed):
+        body = issue.get("body") or ""
+        state = issue.get("state", "open")
+        stage = parse_field(body, "Initial stage", "Inbox")
+        if state == "closed" and stage.lower() not in {"project", "archived"}:
+            stage = "Archived"
+        ideas.append({
+            "number": issue["number"],
+            "title": display_title(issue.get("title", "Untitled idea")),
+            "url": issue["html_url"],
+            "state": state,
+            "stage": stage,
+            "category": parse_field(body, "Category", "Other"),
+            "why": parse_field(body, "Why it might matter", ""),
+            "createdAt": issue["created_at"],
+            "updatedAt": issue.get("updated_at") or issue["created_at"],
+            "closedAt": issue.get("closed_at"),
+        })
+    return json.dumps(
+        {
+            "generatedAt": datetime.now(timezone.utc).isoformat(),
+            "source": "GitHub Issues",
+            "ideas": ideas,
+        },
+        ensure_ascii=False,
+        indent=2,
+    ) + "\n"
+
+
 def generate_table(parsed, limit=None, newest_first=False):
     rows = list(reversed(parsed)) if newest_first else list(parsed)
     if limit is not None:
@@ -582,9 +613,11 @@ def main():
     (ASSET_DIR / "idea-journey-dark.svg").write_text(generate_svg(parsed, "dark"), encoding="utf-8")
     generate_gif(parsed, "light", ASSET_DIR / "idea-journey-light.gif")
     generate_gif(parsed, "dark", ASSET_DIR / "idea-journey-dark.gif")
+    Path("docs").mkdir(parents=True, exist_ok=True)
+    Path("docs/ideas.json").write_text(generate_ideas_json(parsed), encoding="utf-8")
     Path("TIMELINE.md").write_text(generate_full(parsed), encoding="utf-8")
     update_readme(generate_home(parsed))
-    print(f"Generated dashboard, animated GIF journey, SVG history, and timeline from {len(parsed)} issue(s).")
+    print(f"Generated README assets, docs/ideas.json, and timeline from {len(parsed)} issue(s).")
 
 if __name__ == "__main__":
     main()
