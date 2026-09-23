@@ -51,6 +51,25 @@ class GeneratorTests(unittest.TestCase):
         body = "## Idea\nOnly human content.\n\n## Initial stage\nInbox"
         self.assertEqual(parse_section(body, "AI Notes", ""), "")
 
+    def test_issue_form_level_three_headings_are_parsed(self):
+        body = """### Idea
+Human-created note.
+
+### Why it might matter
+Created through GitHub Issue Forms.
+
+### Initial stage
+Exploring
+
+### Category
+Personal
+"""
+        self.assertEqual(parse_section(body, "Idea", ""), "Human-created note.")
+        self.assertEqual(parse_section(body, "Why it might matter", ""), "Created through GitHub Issue Forms.")
+        from scripts.generate_timeline import parse_field
+        self.assertEqual(parse_field(body, "Initial stage", "Inbox"), "Exploring")
+        self.assertEqual(parse_field(body, "Category", "Other"), "Personal")
+
     def test_generated_index_exposes_idea_and_ai_notes(self):
         parsed = [(parse_iso("2026-09-23T07:00:00Z"), issue())]
         data = json.loads(generate_ideas_json(parsed))
