@@ -1,0 +1,48 @@
+from pathlib import Path
+import unittest
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+class AIContractTests(unittest.TestCase):
+    def test_agents_declares_source_of_truth_and_generated_json_read_only(self):
+        text = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+        self.assertIn("GitHub Issues", text)
+        self.assertIn("source of truth", text.lower())
+        self.assertIn("docs/ideas.json", text)
+        self.assertIn("read-only", text.lower())
+
+    def test_agents_enforces_project_and_archive_gates(self):
+        text = (ROOT / "AGENTS.md").read_text(encoding="utf-8").lower()
+        self.assertIn("project", text)
+        self.assertIn("explicit user instruction", text)
+        self.assertIn("archive", text)
+        self.assertIn("close", text)
+
+    def test_agents_requires_reread_and_human_content_preservation(self):
+        text = (ROOT / "AGENTS.md").read_text(encoding="utf-8").lower()
+        self.assertIn("re-read", text)
+        self.assertIn("preserve", text)
+        self.assertIn("human", text)
+
+    def test_api_doc_uses_official_issue_endpoints_and_stops_on_auth_failure(self):
+        text = (ROOT / "docs" / "ai-access.md").read_text(encoding="utf-8")
+        lowered = text.lower()
+        self.assertIn("GET /repos/{owner}/{repo}/issues", text)
+        self.assertIn("POST /repos/{owner}/{repo}/issues", text)
+        self.assertIn("PATCH /repos/{owner}/{repo}/issues/{issue_number}", text)
+        self.assertIn("POST /repos/{owner}/{repo}/issues/{issue_number}/comments", text)
+        self.assertIn("401", text)
+        self.assertIn("403", text)
+        self.assertIn("stop", lowered)
+        self.assertIn("do not attempt an alternate write path", lowered)
+
+    def test_issue_template_stays_human_first_and_keeps_canonical_sections(self):
+        text = (ROOT / ".github" / "ISSUE_TEMPLATE" / "idea.yml").read_text(encoding="utf-8")
+        for label in ("Idea", "Why it might matter", "Initial stage", "Category", "Brain-dump rule"):
+            self.assertIn(f"label: {label}", text)
+        self.assertNotIn("label: AI Notes", text)
+
+
+if __name__ == "__main__":
+    unittest.main()
