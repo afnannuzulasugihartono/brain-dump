@@ -2,6 +2,20 @@
   "source": "GitHub Issues",
   "ideas": [
     {
+      "number": 3,
+      "title": "AI access verification",
+      "url": "https://github.com/afnannuzulasugihartono/brain-dump/issues/3",
+      "state": "open",
+      "stage": "Inbox",
+      "category": "Software",
+      "why": "Brain Dump should be usable by both humans and AI without a custom backend.",
+      "idea": "Verify that an authenticated AI can create an idea through the GitHub API.",
+      "aiNotes": "Created as a temporary end-to-end verification of the documented AI path.",
+      "createdAt": "2026-09-23T09:28:21Z",
+      "updatedAt": "2026-09-23T09:28:21Z",
+      "closedAt": null
+    },
+    {
       "number": 1,
       "title": "Test visualization",
       "url": "https://github.com/afnannuzulasugihartono/brain-dump/issues/1",

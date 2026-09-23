@@ -9,7 +9,13 @@ A small place for notes and ideas.
 <!-- TIMELINE:START -->
 ## Recent ideas
 
-_1 idea · 1 open_
+_2 ideas · 2 open_
+
+### 23 Sep 2026 · [#3 AI access verification](https://github.com/afnannuzulasugihartono/brain-dump/issues/3)
+
+Brain Dump should be usable by both humans and AI without a custom backend.
+
+**Inbox** · Software · Open
 
 ### 23 Sep 2026 · [#1 Test visualization](https://github.com/afnannuzulasugihartono/brain-dump/issues/1)
 
