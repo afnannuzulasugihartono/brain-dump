@@ -32,7 +32,20 @@ test("invalid AI sidecar shape degrades to no insights", async () => {
   const originalFetch = globalThis.fetch;
   globalThis.fetch = async url => {
     if (String(url).includes("ideas.json")) return {ok:true, json:async () => ({ideas:[{number:1,title:"One",createdAt:"2026-09-01T00:00:00Z"}]})};
-    return {ok:true, json:async () => ({insights:"invalid"})};
+    return {ok:true, json:async () => ({source:"AI review",insights:"invalid"})};
+  };
+  try {
+    const result = await loadBrainDumpData();
+    assert.equal(result.insightsByIssue.size, 0);
+  } finally { globalThis.fetch = originalFetch; }
+});
+
+test("malformed AI insight entry is ignored", async () => {
+  const {loadBrainDumpData} = await dataModule() ?? {};
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async url => {
+    if (String(url).includes("ideas.json")) return {ok:true, json:async () => ({ideas:[{number:1,title:"One",createdAt:"2026-09-01T00:00:00Z"}]})};
+    return {ok:true, json:async () => ({source:"AI review",insights:[{issueNumber:1,suggestedAction:"revisit"}]})};
   };
   try {
     const result = await loadBrainDumpData();

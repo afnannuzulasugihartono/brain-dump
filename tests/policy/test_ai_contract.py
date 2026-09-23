@@ -57,6 +57,13 @@ class AIContractTests(unittest.TestCase):
         self.assertIn("docs/data/ai-insights.json", text)
         self.assertIn("do not edit", text)
 
+    def test_ai_access_preserves_safe_update_contract(self):
+        text = (ROOT / "docs" / "ai-access.md").read_text(encoding="utf-8")
+        self.assertIn("## Canonical Issue body", text)
+        self.assertIn("## Safe update algorithm", text)
+        self.assertIn("## Stage rules", text)
+        self.assertIn("re-read the canonical Issue", text)
+
     def test_ai_access_documents_sidecar_recommendations(self):
         text = (ROOT / "docs" / "ai-access.md").read_text(encoding="utf-8").lower()
         self.assertIn("ai-insights.json", text)

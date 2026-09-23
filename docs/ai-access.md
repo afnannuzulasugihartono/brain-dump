@@ -4,7 +4,15 @@ GitHub Issues are the only authoritative write surface for Brain Dump. AI agents
 
 ## Authentication
 
-Use a GitHub credential that has access to this repository and permission to read/write Issues. Never place the credential in an Issue, repository file, or client-side JavaScript.
+Use a GitHub credential that has access to this repository and permission to read/write Issues. Never place the credential in an Issue, repository file, generated JSON, or client-side JavaScript.
+
+Example read request:
+
+```bash
+curl -H "Authorization: Bearer $GITHUB_TOKEN" \
+     -H "Accept: application/vnd.github+json" \
+     https://api.github.com/repos/{owner}/{repo}/issues
+```
 
 If GitHub returns **401** or **403**, stop and report the authorization failure. Do not attempt an alternate write path.
 
@@ -26,16 +34,89 @@ For fast discovery an agent may read `docs/data/ideas.json`, but it must re-read
 - `PATCH /repos/{owner}/{repo}/issues/{issue_number}` — edit allowed fields while preserving human-authored content.
 - `POST /repos/{owner}/{repo}/issues/{issue_number}/comments` — record a material AI change.
 
+## Canonical Issue body
+
+```markdown
+## Idea
+Write the original human idea here.
+
+## Why it might matter
+Write the context or motivation here.
+
+## Initial stage
+Inbox
+
+## Category
+Other
+
+## Brain-dump rule
+- [x] This is a raw idea, not an approved implementation task.
+```
+
+AI-added context may be appended as:
+
+```markdown
+## AI Notes
+Add AI-provided context, clarification, or research here.
+```
+
+## Safe update algorithm
+
+Before any material PATCH, re-read the canonical Issue and merge from that fresh state:
+
+1. `GET` the Issue again immediately before editing.
+2. Parse the current sections from that fresh response.
+3. Preserve all human-authored sections exactly unless the user explicitly asked for a wording change.
+4. Change only the permitted field or append/update `## AI Notes`.
+5. `PATCH` the complete merged body.
+6. For a material change, add a concise audit comment describing what changed.
+
+This prevents an AI from overwriting human content that appeared after an earlier read.
+
+## Stage rules
+
+An AI may move an idea through:
+
+`Inbox → Exploring → Promising`
+
+Moving an idea to `Project` requires explicit user instruction for that idea.
+
+Moving an idea to `Archived` or closing the Issue also requires explicit user instruction. Without that instruction, the AI may only recommend archive/close.
+
+## Audit comments
+
+Example material-change comment:
+
+```text
+AI update:
+- added comparison context
+- category changed from Other to Software
+- stage moved from Inbox to Exploring
+```
+
+Minor formatting-only edits that do not change meaning do not need a comment.
+
+## Create example
+
+Use `POST /repos/{owner}/{repo}/issues` with a body like:
+
+```json
+{
+  "title": "[Idea] Example",
+  "body": "## Idea\nExample idea.\n\n## Why it might matter\nUseful context.\n\n## Initial stage\nInbox\n\n## Category\nOther\n\n## Brain-dump rule\n- [x] This is a raw idea, not an approved implementation task."
+}
+```
+
 ## Review intelligence
 
 The public Brain Dump website is **read-only**. Its Review view derives deterministic, explainable scoring directly in the browser from `docs/data/ideas.json`; that score is not an AI judgment.
 
 Optional AI analysis is stored separately in `docs/data/ai-insights.json`. The sidecar may be missing, stale, or unavailable without changing canonical Issue data or blocking Notes, Review, Board, Calendar, search, filters, or the ticker.
 
-AI Review may recommend `keep-exploring`, `revisit`, `promote-candidate`, or `consider-archive`. These are recommendations only. `promote-candidate` does not authorize moving an Issue to Project, and `consider-archive` does not authorize archiving or closing it. The stage gates above remain authoritative.
+AI Review may recommend `keep-exploring`, `revisit`, `promote-candidate`, or `consider-archive`. These are recommendations only. `promote-candidate` does not authorize moving an Issue to Project, and `consider-archive` does not authorize archiving or closing it. The stage rules above remain authoritative.
 
 AI provider credentials belong only in GitHub-managed Actions secrets/variables. Never place provider credentials in Issues, repository files, generated JSON, or client-side JavaScript.
 
 ## Generated data
 
-`docs/data/ideas.json`, `docs/data/ai-insights.json`, README summaries, timeline files, and GitHub Pages are generated read views. Do not edit them as a substitute for editing the Issue.
+`docs/data/ideas.json`, `docs/data/ai-insights.json`, README summaries, timeline files, and GitHub Pages are generated read views. Do not edit them as a substitute for editing the Issue or changing the generator/evaluator that owns the output.
