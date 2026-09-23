@@ -17,6 +17,7 @@ START_MARKER = "<!-- TIMELINE:START -->"
 END_MARKER = "<!-- TIMELINE:END -->"
 ASSET_DIR = Path("assets")
 RECENT_LIMIT = 8
+TRUSTED_AUTHOR_ASSOCIATIONS = {"OWNER", "COLLABORATOR", "MEMBER"}
 
 THEMES = {
     "light": {
@@ -64,13 +65,28 @@ def display_title(value: str) -> str:
 
 def parse_field(body: str, heading: str, fallback: str) -> str:
     match = re.search(
-        rf"(?ims)^##\s+{re.escape(heading)}\s*\n+(.+?)(?=\n##\s+|\Z)",
+        rf"(?ims)^#{{2,6}}\s+{re.escape(heading)}\s*\n+(.+?)(?=\n#{{2,6}}\s+|\Z)",
         body or "",
     )
     if not match:
         return fallback
     value = " ".join(match.group(1).strip().splitlines()[0].split())
     return value or fallback
+
+def parse_section(body: str, heading: str, fallback: str = "") -> str:
+    match = re.search(
+        rf"(?ims)^#{{2,6}}\s+{re.escape(heading)}\s*\n+(.+?)(?=\n#{{2,6}}\s+|\Z)",
+        body or "",
+    )
+    if not match:
+        return fallback
+    value = match.group(1).strip()
+    return value or fallback
+
+def is_trusted_issue(issue, owner: str) -> bool:
+    login = issue.get("user", {}).get("login", "").lower()
+    association = (issue.get("author_association") or "").upper()
+    return login == owner.lower() or association in TRUSTED_AUTHOR_ASSOCIATIONS
 
 def parse_issues(issues):
     parsed = []
@@ -107,6 +123,8 @@ def generate_ideas_json(parsed):
             "stage": effective_stage(issue),
             "category": parse_field(body, "Category", "Other"),
             "why": parse_field(body, "Why it might matter", ""),
+            "idea": parse_section(body, "Idea", ""),
+            "aiNotes": parse_section(body, "AI Notes", ""),
             "createdAt": issue["created_at"],
             "updatedAt": issue.get("updated_at") or issue["created_at"],
             "closedAt": issue.get("closed_at"),
@@ -176,13 +194,10 @@ def picture_block():
 def generate_home(parsed):
     total = len(parsed)
     open_count = sum(1 for _, issue in parsed if issue.get("state", "open") == "open")
-    promising = sum(1 for _, issue in parsed if effective_stage(issue).lower() == "promising")
-    promoted = sum(1 for _, issue in parsed if effective_stage(issue).lower() == "project")
     lines = [
-        "## Overview", "",
-        f"**{total} idea{'s' if total != 1 else ''}** · **{open_count} open** · **{promising} promising** · **{promoted} promoted**",
-        "",
         "## Recent ideas", "",
+        f"_{total} idea{'s' if total != 1 else ''} · {open_count} open_",
+        "",
     ]
 
     rows = list(reversed(parsed))[:RECENT_LIMIT]
@@ -252,7 +267,7 @@ def main():
     owner = repo.split("/", 1)[0].lower()
     issues = [
         issue for issue in get_issues(repo, token)
-        if issue.get("user", {}).get("login", "").lower() == owner
+        if is_trusted_issue(issue, owner)
     ]
     parsed = parse_issues(issues)
 

@@ -6,65 +6,54 @@
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#0d1117">
   <title>Brain Dump</title>
-  <meta name="description" content="Capture now. Organize later.">
+  <meta name="description" content="Notes and ideas backed by GitHub Issues.">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
   <header class="topbar">
     <div class="shell topbar-inner">
-      <a class="brand" href="./" aria-label="Brain Dump home">
-        <span class="brand-mark">🧠</span>
-        <span><strong>Brain Dump</strong><small>Capture now. Organize later.</small></span>
-      </a>
+      <a class="brand" href="./" aria-label="Brain Dump home"><strong>Brain Dump</strong></a>
       <div class="top-actions">
         <button id="themeToggle" class="icon-button" type="button" aria-label="Toggle theme">◐</button>
-        <a class="new-button" href="https://github.com/afnannuzulasugihartono/brain-dump/issues/new/choose">＋ New idea</a>
+        <a class="new-button" href="https://github.com/afnannuzulasugihartono/brain-dump/issues/new?template=idea.yml">New note</a>
       </div>
     </div>
   </header>
 
   <main class="shell main">
-    <a class="capture" href="https://github.com/afnannuzulasugihartono/brain-dump/issues/new/choose">
-      <span class="avatar">✦</span>
-      <span class="capture-copy"><strong>Capture an idea</strong><small>Write it down before it disappears.</small></span>
-      <span class="capture-action">New issue →</span>
+    <a class="composer" href="https://github.com/afnannuzulasugihartono/brain-dump/issues/new?template=idea.yml">
+      <span>What's on your mind?</span>
+      <small>Write a note…</small>
     </a>
 
-    <div class="summary-row">
-      <div id="summary" class="summary" aria-label="Idea statistics"></div>
+    <div class="tools">
       <label class="search">
-        <span>⌕</span>
-        <input id="searchInput" type="search" placeholder="Search ideas…" autocomplete="off">
+        <span aria-hidden="true">⌕</span>
+        <input id="searchInput" type="search" placeholder="Search" autocomplete="off" aria-label="Search ideas">
       </label>
+      <div class="filters">
+        <select id="categoryFilter" aria-label="Filter by category"><option value="all">Category</option></select>
+        <select id="stageFilter" aria-label="Filter by stage"><option value="all">Stage</option></select>
+      </div>
     </div>
 
-    <section class="workspace">
-      <div class="workspace-bar">
-        <nav class="tabs" aria-label="Idea views">
-          <button class="tab active" data-view="journey">Journey</button>
-          <button class="tab" data-view="cards">Cards</button>
-          <button class="tab" data-view="board">Board</button>
-          <button class="tab" data-view="calendar">Calendar</button>
-        </nav>
+    <nav class="tabs" aria-label="Idea views">
+      <button class="tab active" data-view="notes">Notes</button>
+      <button class="tab" data-view="cards">Cards</button>
+      <button class="tab" data-view="board">Board</button>
+      <button class="tab" data-view="calendar">Calendar</button>
+    </nav>
 
-        <div class="filters">
-          <select id="categoryFilter" aria-label="Filter by category"><option value="all">All categories</option></select>
-          <select id="stageFilter" aria-label="Filter by stage"><option value="all">All stages</option></select>
-        </div>
-      </div>
+    <p id="activeFilters" class="filter-note" hidden></p>
 
-      <p id="activeFilters" class="filter-note" hidden></p>
-
-      <section id="journeyView" class="view active"></section>
-      <section id="cardsView" class="view"></section>
-      <section id="boardView" class="view"></section>
-      <section id="calendarView" class="view"></section>
-    </section>
+    <section id="notesView" class="view active"></section>
+    <section id="cardsView" class="view"></section>
+    <section id="boardView" class="view"></section>
+    <section id="calendarView" class="view"></section>
   </main>
 
   <footer class="shell footer">
-    <span>GitHub Issues are the source of truth.</span>
-    <nav>
+    <nav aria-label="Brain Dump links">
       <a href="https://github.com/afnannuzulasugihartono/brain-dump/issues">Issues</a>
       <a href="https://github.com/users/afnannuzulasugihartono/projects/1/views/1">Project</a>
       <a href="https://github.com/afnannuzulasugihartono/brain-dump">Repository</a>
@@ -72,7 +61,7 @@
   </footer>
 
   <template id="emptyTemplate">
-    <div class="empty"><strong>No ideas here yet.</strong><span>Capture a new thought or change the filters.</span></div>
+    <div class="empty"><strong>No notes yet.</strong><span>Try another filter or jot something down.</span></div>
   </template>
 
   <script src="./app.js" defer></script>
