@@ -2,7 +2,7 @@
 
 A small place for notes and ideas.
 
-[Open Brain Dump](https://afnannuzulasugihartono.github.io/brain-dump/) · [New note](https://github.com/afnannuzulasugihartono/brain-dump/issues/new/choose) · [Issues](https://github.com/afnannuzulasugihartono/brain-dump/issues) · [AI access](docs/ai-access.md)
+[Open Brain Dump](https://afnannuzulasugihartono.github.io/brain-dump/) · [New note](https://github.com/afnannuzulasugihartono/brain-dump/issues/new?template=idea.yml) · [Issues](https://github.com/afnannuzulasugihartono/brain-dump/issues) · [AI access](docs/ai-access.md)
 
 ---
 
