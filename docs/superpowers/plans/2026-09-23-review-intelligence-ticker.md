@@ -85,6 +85,15 @@ Tests:
 
 - [ ] **Step 1: Write failing normalization and output-path tests**
 
+At the top of tests/test_generate_timeline.py add:
+
+~~~python
+from pathlib import Path
+ROOT = Path(__file__).resolve().parents[1]
+~~~
+
+Then add:
+
 ~~~python
 from scripts.generate.issues import normalize_issue
 
@@ -445,10 +454,10 @@ docs/js/review.js imports scoring.js and views.js. It must:
 - show Worth Revisiting only for score >=6;
 - show score and signal labels as text;
 - render Rediscover or a quiet empty state;
-- render optional AI summary when present;
+- render optional AI summary when present and escape all AI/Issue text before innerHTML;
 - use details/summary for detailed strength/risk/nextStep;
-- provide a Review in GitHub link;
-- never perform POST/PATCH.
+- render an action-aware GitHub link: Keep exploring in GitHub, Revisit in GitHub, Promote candidate in GitHub, or Consider archive in GitHub when AI suggests that action; otherwise Review in GitHub;
+- every action-aware link points only to idea.url and never performs POST/PATCH.
 
 Core decision logic:
 
@@ -860,6 +869,14 @@ Move Python tests into:
 - tests/policy
 
 Add __init__.py in each Python package.
+
+For moved tests that resolve repository files, set:
+
+~~~python
+ROOT = Path(__file__).resolve().parents[2]
+~~~
+
+This applies to the moved frontend/static, workflow, and policy tests; do not leave parents[1], which would resolve to the tests directory.
 
 Run:
 
