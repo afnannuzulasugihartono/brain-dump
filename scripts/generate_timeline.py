@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate Brain Dump data, static README visuals, and timeline history."""
+"""Generate Brain Dump data, README feed, and lightweight timeline assets."""
 from __future__ import annotations
 
 import calendar
@@ -9,38 +9,38 @@ import os
 import re
 import sys
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 
 API = "https://api.github.com"
 START_MARKER = "<!-- TIMELINE:START -->"
 END_MARKER = "<!-- TIMELINE:END -->"
 ASSET_DIR = Path("assets")
-HOME_LIMIT = 10
+RECENT_LIMIT = 8
 
 THEMES = {
     "light": {
-        "bg": "#ffffff", "card": "#f6f8fa", "latest": "#f0f7ff",
-        "border": "#d0d7de", "text": "#1f2328", "muted": "#656d76",
-        "line": "#d0d7de", "accent": "#0969da", "open": "#1a7f37",
-        "closed": "#8250df", "pill": "#eaeef2", "pill_text": "#57606a",
+        "bg": "#ffffff", "surface": "#f6f8fa", "border": "#d8dee4",
+        "text": "#24292f", "muted": "#6e7781", "faint": "#8c959f",
+        "accent": "#0969da", "accent_soft": "#ddf4ff",
+        "green": "#1a7f37", "green_soft": "#dafbe1",
     },
     "dark": {
-        "bg": "#0d1117", "card": "#161b22", "latest": "#111d2f",
-        "border": "#30363d", "text": "#f0f6fc", "muted": "#8b949e",
-        "line": "#30363d", "accent": "#58a6ff", "open": "#3fb950",
-        "closed": "#a371f7", "pill": "#21262d", "pill_text": "#c9d1d9",
+        "bg": "#0d1117", "surface": "#161b22", "border": "#30363d",
+        "text": "#e6edf3", "muted": "#8b949e", "faint": "#6e7681",
+        "accent": "#58a6ff", "accent_soft": "#13233a",
+        "green": "#3fb950", "green_soft": "#12261a",
     },
 }
 
 def api_get(url: str, token: str):
-    request = urllib.request.Request(url, headers={
+    req = urllib.request.Request(url, headers={
         "Accept": "application/vnd.github+json",
         "Authorization": f"Bearer {token}",
         "X-GitHub-Api-Version": "2022-11-28",
         "User-Agent": "brain-dump",
     })
-    with urllib.request.urlopen(request, timeout=30) as response:
+    with urllib.request.urlopen(req, timeout=30) as response:
         return json.load(response)
 
 def get_issues(repo: str, token: str):
@@ -69,7 +69,7 @@ def parse_field(body: str, heading: str, fallback: str) -> str:
     )
     if not match:
         return fallback
-    value = match.group(1).strip().splitlines()[0].strip()
+    value = " ".join(match.group(1).strip().splitlines()[0].split())
     return value or fallback
 
 def parse_issues(issues):
@@ -82,184 +82,162 @@ def parse_issues(issues):
 def human_date(value: datetime) -> str:
     return f"{value.day} {calendar.month_abbr[value.month]} {value.year}"
 
-def state_label(issue) -> str:
-    return "🟢 Open" if issue.get("state", "open") == "open" else "✅ Closed"
+def escape_md(value: str) -> str:
+    return value.replace("|", "\\|").replace("\n", " ")
 
 def truncate(value: str, limit: int) -> str:
-    value = " ".join(value.split())
+    value = " ".join((value or "").split())
     return value if len(value) <= limit else value[:limit - 1].rstrip() + "…"
 
-def pill_width(value: str) -> int:
-    return max(52, min(116, 18 + len(value) * 7))
-
-def generate_svg(parsed, theme_name: str, limit=HOME_LIMIT):
-    theme = THEMES[theme_name]
-    rows = parsed[-limit:]
-    width, header_h, row_h, footer_h = 920, 90, 102, 30
-    height = header_h + max(1, len(rows)) * row_h + footer_h
-    center, card_w, card_h = width // 2, 370, 76
-    left_x, right_x = 28, width - 28 - card_w
-    font = "-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif"
-
-    total = len(parsed)
-    open_count = sum(1 for _, issue in parsed if issue.get("state", "open") == "open")
-    closed_count = total - open_count
-
-    out = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">',
-        '<title id="title">Brain Dump Idea Journey</title>',
-        '<desc id="desc">Chronological timeline generated from GitHub Issues.</desc>',
-        f'<rect width="100%" height="100%" rx="12" fill="{theme["bg"]}"/>',
-        f'<text x="28" y="34" fill="{theme["text"]}" font-family="{font}" font-size="19" font-weight="700">Idea Journey</text>',
-        f'<text x="28" y="56" fill="{theme["muted"]}" font-family="{font}" font-size="11">GitHub Issues · chronological view</text>',
-        f'<text x="{width-28}" y="34" text-anchor="end" fill="{theme["muted"]}" font-family="{font}" font-size="10">{total} IDEAS · {open_count} OPEN · {closed_count} CLOSED</text>',
-        f'<line x1="28" y1="70" x2="{width-28}" y2="70" stroke="{theme["border"]}"/>',
-    ]
-
-    if rows:
-        line_top, line_bottom = header_h + 24, header_h + len(rows) * row_h - 25
-        out.append(f'<line x1="{center}" y1="{line_top}" x2="{center}" y2="{line_bottom}" stroke="{theme["line"]}"/>')
-        previous_month = None
-
-        for index, (created, issue) in enumerate(rows):
-            row_y = header_h + index * row_h
-            node_y = row_y + 42
-            left = index % 2 == 0
-            card_x = left_x if left else right_x
-            card_y = row_y + 4
-
-            month_key = (created.year, created.month)
-            if month_key != previous_month:
-                label = f"{calendar.month_abbr[created.month].upper()} {created.year}"
-                out += [
-                    f'<rect x="{center-38}" y="{row_y-5}" width="76" height="18" rx="9" fill="{theme["card"]}" stroke="{theme["border"]}"/>',
-                    f'<text x="{center}" y="{row_y+8}" text-anchor="middle" fill="{theme["accent"]}" font-family="{font}" font-size="9" font-weight="700">{label}</text>',
-                ]
-                card_y += 12
-                node_y += 12
-            previous_month = month_key
-
-            state = issue.get("state", "open")
-            state_color = theme["open"] if state == "open" else theme["closed"]
-            title = html.escape(truncate(display_title(issue.get("title", "Untitled idea")), 40))
-            body = issue.get("body") or ""
-            stage = truncate(parse_field(body, "Initial stage", "Inbox"), 14).upper()
-            category = truncate(parse_field(body, "Category", "Other"), 14).upper()
-            latest = (created, issue) == parsed[-1]
-            fill = theme["latest"] if latest else theme["card"]
-
-            connector_start = card_x + card_w if left else center
-            connector_end = center if left else card_x
-            out += [
-                f'<line x1="{connector_start}" y1="{node_y}" x2="{connector_end}" y2="{node_y}" stroke="{theme["line"]}"/>',
-                f'<circle cx="{center}" cy="{node_y}" r="5" fill="{theme["bg"]}" stroke="{state_color}" stroke-width="2"/>',
-                f'<rect x="{card_x}" y="{card_y}" width="{card_w}" height="{card_h}" rx="10" fill="{fill}" stroke="{theme["accent"] if latest else theme["border"]}"/>',
-                f'<text x="{card_x+16}" y="{card_y+21}" fill="{theme["muted"]}" font-family="{font}" font-size="10">#{issue["number"]} · {human_date(created)}</text>',
-                f'<text x="{card_x+16}" y="{card_y+42}" fill="{theme["text"]}" font-family="{font}" font-size="14" font-weight="700">{title}</text>',
-            ]
-            px = card_x + 16
-            for label in (state.upper(), stage, category):
-                pw = pill_width(label)
-                fill_color = state_color if label in {"OPEN", "CLOSED"} else theme["pill"]
-                text_color = theme["bg"] if label in {"OPEN", "CLOSED"} else theme["pill_text"]
-                out += [
-                    f'<rect x="{px}" y="{card_y+51}" width="{pw}" height="17" rx="8.5" fill="{fill_color}"/>',
-                    f'<text x="{px+pw/2}" y="{card_y+63}" text-anchor="middle" fill="{text_color}" font-family="{font}" font-size="8" font-weight="700">{html.escape(label)}</text>',
-                ]
-                px += pw + 6
-    else:
-        out += [
-            f'<rect x="190" y="120" width="540" height="62" rx="10" fill="{theme["card"]}" stroke="{theme["border"]}"/>',
-            f'<text x="{center}" y="148" text-anchor="middle" fill="{theme["text"]}" font-family="{font}" font-size="14" font-weight="700">No ideas captured yet</text>',
-            f'<text x="{center}" y="168" text-anchor="middle" fill="{theme["muted"]}" font-family="{font}" font-size="10">Create a GitHub Issue and it will appear here automatically.</text>',
-        ]
-
-    out.append(f'<text x="{center}" y="{height-11}" text-anchor="middle" fill="{theme["muted"]}" font-family="{font}" font-size="9">Generated automatically from GitHub Issue timestamps</text>')
-    out.append("</svg>")
-    return "\n".join(out)
+def effective_stage(issue) -> str:
+    stage = parse_field(issue.get("body") or "", "Initial stage", "Inbox")
+    if issue.get("state") == "closed" and stage.lower() not in {"project", "archived"}:
+        return "Archived"
+    return stage
 
 def generate_ideas_json(parsed):
     ideas = []
     for _, issue in reversed(parsed):
         body = issue.get("body") or ""
-        state = issue.get("state", "open")
-        stage = parse_field(body, "Initial stage", "Inbox")
-        if state == "closed" and stage.lower() not in {"project", "archived"}:
-            stage = "Archived"
         ideas.append({
             "number": issue["number"],
             "title": display_title(issue.get("title", "Untitled idea")),
             "url": issue["html_url"],
-            "state": state,
-            "stage": stage,
+            "state": issue.get("state", "open"),
+            "stage": effective_stage(issue),
             "category": parse_field(body, "Category", "Other"),
             "why": parse_field(body, "Why it might matter", ""),
             "createdAt": issue["created_at"],
             "updatedAt": issue.get("updated_at") or issue["created_at"],
             "closedAt": issue.get("closed_at"),
         })
-    return json.dumps({
-        "generatedAt": datetime.now(timezone.utc).isoformat(),
-        "source": "GitHub Issues",
-        "ideas": ideas,
-    }, ensure_ascii=False, indent=2) + "\n"
+    return json.dumps({"source": "GitHub Issues", "ideas": ideas}, ensure_ascii=False, indent=2) + "\n"
 
-def table(parsed, limit=None, newest_first=False):
-    rows = list(reversed(parsed)) if newest_first else list(parsed)
-    if limit is not None:
-        rows = rows[:limit]
-    lines = ["| Date | Idea | State |", "| --- | --- | --- |"]
-    for created, issue in rows:
-        title = display_title(issue.get("title", "Untitled idea")).replace("|", "\\|")
-        lines.append(f'| {human_date(created)} | [#{issue["number"]} — {title}]({issue["html_url"]}) | {state_label(issue)} |')
-    return lines
+def generate_svg(parsed, theme_name: str):
+    theme = THEMES[theme_name]
+    rows = parsed[-10:]
+    width, header_h, row_h, footer_h = 920, 72, 82, 28
+    height = header_h + max(1, len(rows)) * row_h + footer_h
+    font = "-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif"
+    total = len(parsed)
+    open_count = sum(1 for _, issue in parsed if issue.get("state", "open") == "open")
+
+    out = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">',
+        '<title id="title">Brain Dump timeline</title>',
+        '<desc id="desc">A compact chronological feed generated from GitHub Issues.</desc>',
+        f'<rect width="100%" height="100%" rx="10" fill="{theme["bg"]}"/>',
+        f'<text x="24" y="30" fill="{theme["text"]}" font-family="{font}" font-size="17" font-weight="700">Brain Dump timeline</text>',
+        f'<text x="24" y="50" fill="{theme["muted"]}" font-family="{font}" font-size="10">Capture now. Organize later.</text>',
+        f'<text x="{width-24}" y="30" text-anchor="end" fill="{theme["muted"]}" font-family="{font}" font-size="9">{total} IDEAS · {open_count} OPEN</text>',
+        f'<line x1="24" y1="62" x2="{width-24}" y2="62" stroke="{theme["border"]}"/>',
+    ]
+
+    if rows:
+        for idx, (created, issue) in enumerate(rows):
+            y = header_h + idx * row_h
+            state = issue.get("state", "open")
+            stage = effective_stage(issue)
+            category = parse_field(issue.get("body") or "", "Category", "Other")
+            why = truncate(parse_field(issue.get("body") or "", "Why it might matter", ""), 82)
+            title = html.escape(truncate(display_title(issue.get("title", "Untitled idea")), 58))
+            latest = (created, issue) == parsed[-1]
+            dot = theme["accent"] if latest else (theme["green"] if state == "open" else theme["muted"])
+            fill = theme["accent_soft"] if latest else theme["bg"]
+
+            out += [
+                f'<rect x="14" y="{y+4}" width="{width-28}" height="{row_h-8}" rx="8" fill="{fill}"/>',
+                f'<text x="28" y="{y+26}" fill="{theme["muted"]}" font-family="{font}" font-size="9">{created.day} {calendar.month_abbr[created.month]}</text>',
+                f'<circle cx="100" cy="{y+22}" r="4" fill="{dot}"/>',
+                f'<text x="118" y="{y+25}" fill="{theme["text"]}" font-family="{font}" font-size="13" font-weight="700">{title}</text>',
+                f'<text x="118" y="{y+44}" fill="{theme["muted"]}" font-family="{font}" font-size="9">{html.escape(why or "No context added yet.")}</text>',
+                f'<text x="118" y="{y+62}" fill="{theme["muted"]}" font-family="{font}" font-size="8">{html.escape(stage.upper())} · {html.escape(category.upper())} · {state.upper()}</text>',
+                f'<line x1="100" y1="{y+70}" x2="{width-24}" y2="{y+70}" stroke="{theme["border"]}"/>',
+            ]
+    else:
+        out += [
+            f'<text x="{width/2}" y="118" text-anchor="middle" fill="{theme["text"]}" font-family="{font}" font-size="13" font-weight="700">No ideas captured yet</text>',
+            f'<text x="{width/2}" y="138" text-anchor="middle" fill="{theme["muted"]}" font-family="{font}" font-size="9">Create an Issue and it will appear here automatically.</text>',
+        ]
+
+    out.append(f'<text x="{width/2}" y="{height-10}" text-anchor="middle" fill="{theme["faint"]}" font-family="{font}" font-size="8">Generated from GitHub Issue timestamps</text>')
+    out.append("</svg>")
+    return "\n".join(out)
 
 def picture_block():
     return "\n".join([
-        '<p align="center">',
-        '  <picture>',
-        '    <source media="(prefers-color-scheme: dark)" srcset="./assets/idea-journey-dark.svg">',
-        '    <source media="(prefers-color-scheme: light)" srcset="./assets/idea-journey-light.svg">',
-        '    <img alt="Brain Dump Idea Journey" src="./assets/idea-journey-light.svg" width="100%">',
-        '  </picture>',
-        '</p>',
+        '<picture>',
+        '  <source media="(prefers-color-scheme: dark)" srcset="./assets/idea-journey-dark.svg">',
+        '  <source media="(prefers-color-scheme: light)" srcset="./assets/idea-journey-light.svg">',
+        '  <img alt="Brain Dump timeline" src="./assets/idea-journey-light.svg" width="100%">',
+        '</picture>',
     ])
-
-def generate_full(parsed):
-    lines = [
-        "# 🕒 Brain Dump Timeline", "",
-        "Complete chronological history generated from GitHub Issue creation timestamps.", "",
-        picture_block(), "",
-        "## 💭 All ideas", "",
-    ]
-    lines += table(parsed) if parsed else ["> No ideas have been captured yet."]
-    lines += ["", "> Dates come directly from GitHub Issue creation timestamps.", ""]
-    return "\n".join(lines)
 
 def generate_home(parsed):
     total = len(parsed)
     open_count = sum(1 for _, issue in parsed if issue.get("state", "open") == "open")
-    latest = parsed[-1] if parsed else None
+    promising = sum(1 for _, issue in parsed if effective_stage(issue).lower() == "promising")
+    promoted = sum(1 for _, issue in parsed if effective_stage(issue).lower() == "project")
     lines = [
-        "## 📊 Snapshot", "",
-        "| 💡 Ideas | 🟢 Open | ✅ Closed | 🕒 Latest |",
-        "| ---: | ---: | ---: | --- |",
-        f'| {total} | {open_count} | {total-open_count} | {human_date(latest[0]) if latest else "—"} |',
+        "## Overview", "",
+        f"**{total} idea{'s' if total != 1 else ''}** · **{open_count} open** · **{promising} promising** · **{promoted} promoted**",
         "",
-        "## 🧭 Idea Journey", "",
-        picture_block(), "",
-        "## 💭 Latest ideas", "",
+        "## Recent ideas", "",
     ]
-    lines += table(parsed, limit=10, newest_first=True) if parsed else ["> No ideas captured yet."]
-    if total > 10:
-        lines += ["", f"_Showing 10 of {total} ideas. See [TIMELINE.md](TIMELINE.md) for the complete history._"]
+
+    rows = list(reversed(parsed))[:RECENT_LIMIT]
+    if not rows:
+        lines += ["> No ideas captured yet."]
+    else:
+        for created, issue in rows:
+            title = escape_md(display_title(issue.get("title", "Untitled idea")))
+            why = escape_md(parse_field(issue.get("body") or "", "Why it might matter", "No context added yet."))
+            stage = escape_md(effective_stage(issue))
+            category = escape_md(parse_field(issue.get("body") or "", "Category", "Other"))
+            state = issue.get("state", "open").capitalize()
+            lines += [
+                f"### {human_date(created)} · [#{issue['number']} {title}]({issue['html_url']})",
+                "",
+                why,
+                "",
+                f"**{stage}** · {category} · {state}",
+                "",
+            ]
+        if total > RECENT_LIMIT:
+            lines += [f"[View all {total} ideas →](TIMELINE.md)", ""]
+    return "\n".join(lines)
+
+def generate_full(parsed):
+    lines = [
+        "# Brain Dump timeline", "",
+        "A complete chronological feed generated from GitHub Issues.", "",
+        picture_block(), "",
+        "## All ideas", "",
+    ]
+    if not parsed:
+        lines += ["> No ideas captured yet."]
+    else:
+        for created, issue in reversed(parsed):
+            title = escape_md(display_title(issue.get("title", "Untitled idea")))
+            why = escape_md(parse_field(issue.get("body") or "", "Why it might matter", "No context added yet."))
+            stage = effective_stage(issue)
+            category = parse_field(issue.get("body") or "", "Category", "Other")
+            state = issue.get("state", "open").capitalize()
+            lines += [
+                f"### {human_date(created)} · [#{issue['number']} {title}]({issue['html_url']})",
+                "",
+                why,
+                "",
+                f"**{stage}** · {category} · {state}",
+                "",
+            ]
     return "\n".join(lines)
 
 def update_readme(block: str):
     path = Path("README.md")
     content = path.read_text(encoding="utf-8")
     if START_MARKER not in content or END_MARKER not in content:
-        raise RuntimeError("README timeline markers are missing.")
+        raise RuntimeError("README markers are missing.")
     before, rest = content.split(START_MARKER, 1)
     _, after = rest.split(END_MARKER, 1)
     path.write_text(before + START_MARKER + "\n" + block.rstrip() + "\n" + END_MARKER + after, encoding="utf-8")
