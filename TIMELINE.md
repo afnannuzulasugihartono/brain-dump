@@ -1,19 +1,17 @@
-# 🕒 Brain Dump Timeline
+# Brain Dump timeline
 
-Complete chronological history generated from GitHub Issue creation timestamps.
+A complete chronological feed generated from GitHub Issues.
 
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./assets/idea-journey-dark.svg">
-    <source media="(prefers-color-scheme: light)" srcset="./assets/idea-journey-light.svg">
-    <img alt="Brain Dump Idea Journey" src="./assets/idea-journey-light.svg" width="100%">
-  </picture>
-</p>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/idea-journey-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/idea-journey-light.svg">
+  <img alt="Brain Dump timeline" src="./assets/idea-journey-light.svg" width="100%">
+</picture>
 
-## 💭 All ideas
+## All ideas
 
-| Date | Idea | State |
-| --- | --- | --- |
-| 23 Sep 2026 | [#1 — Test visualization](https://github.com/afnannuzulasugihartono/brain-dump/issues/1) | 🟢 Open |
+### 23 Sep 2026 · [#1 Test visualization](https://github.com/afnannuzulasugihartono/brain-dump/issues/1)
 
-> Dates come directly from GitHub Issue creation timestamps.
+This is a temporary test idea to verify that a newly created GitHub Issue is picked up by the timeline generator and rendered on the README homepage.
+
+**Inbox** · Other · Open
