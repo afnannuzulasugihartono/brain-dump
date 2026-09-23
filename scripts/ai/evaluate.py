@@ -98,6 +98,26 @@ def _write_document(insights: list[dict]) -> None:
     temp.replace(INSIGHTS_PATH)
 
 
+
+def evaluate_ideas(
+    ideas: list[dict],
+    existing: list[dict],
+    *,
+    evaluated_at: str,
+    base_url: str,
+    api_key: str,
+    model: str,
+    request_func=request_insight,
+) -> tuple[list[dict], int]:
+    updates = []
+    for idea in ideas:
+        try:
+            raw = request_func(idea, base_url=base_url, api_key=api_key, model=model)
+            updates.append(validate_insight(raw, idea["number"], evaluated_at))
+        except Exception as exc:
+            print(f"AI review failed for issue #{idea.get('number')}: {exc}", file=sys.stderr)
+    return merge_insights(existing, updates), len(updates)
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--issue-number", type=int)
@@ -122,18 +142,17 @@ def main(argv=None) -> int:
         ideas = _load_batch_ideas()
 
     evaluated_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
-    updates = []
-    for idea in ideas:
-        try:
-            raw = request_insight(idea, base_url=base_url, api_key=api_key, model=model)
-            updates.append(validate_insight(raw, idea["number"], evaluated_at))
-        except Exception as exc:
-            print(f"AI review failed for issue #{idea.get('number')}: {exc}", file=sys.stderr)
-
-    merged = merge_insights(existing, updates)
+    merged, update_count = evaluate_ideas(
+        ideas,
+        existing,
+        evaluated_at=evaluated_at,
+        base_url=base_url,
+        api_key=api_key,
+        model=model,
+    )
     if merged != existing:
         _write_document(merged)
-        print(f"AI review updated {len(updates)} insight(s).")
+        print(f"AI review updated {update_count} insight(s).")
     else:
         print("AI review produced no changes; preserving existing insights.")
     return 0
