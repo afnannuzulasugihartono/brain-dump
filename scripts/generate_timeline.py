@@ -64,21 +64,27 @@ def parse_issues(issues):
     parsed.sort(key=lambda item: item[0])
     return parsed, groups
 
-def generate_mermaid(groups):
+def generate_mermaid(parsed, limit=None):
+    rows = list(parsed)
+    if limit is not None and len(rows) > limit:
+        rows = rows[-limit:]
+
+    grouped = defaultdict(list)
+    for created, issue in rows:
+        grouped[(created.year, created.month)].append((created, issue))
+
     lines = [
         "```mermaid",
-        "gantt",
-        "    title Brain Dump — Ideas by creation date",
-        "    dateFormat YYYY-MM-DD",
-        "    axisFormat %d %b %Y",
+        "timeline",
+        "    title Brain Dump — Idea Journey",
     ]
-    for year, month in sorted(groups):
+    for year, month in sorted(grouped):
         lines.append(f"    section {calendar.month_abbr[month]} {year}")
-        for created, issue in groups[(year, month)]:
+        for created, issue in grouped[(year, month)]:
             title = clean_mermaid(issue.get("title", "Untitled idea"))
             number = issue["number"]
-            day = created.strftime("%Y-%m-%d")
-            lines.append(f"    #{number} {title} :milestone, idea{number}, {day}, 0d")
+            status = "🟢" if issue.get("state", "open") == "open" else "✅"
+            lines.append(f"        {created.day} {calendar.month_abbr[created.month]} : {status} #{number} — {title}")
     lines.append("```")
     return lines
 
@@ -105,7 +111,7 @@ def generate_full(issues):
     if not issues:
         return "\n".join(lines + ["> No ideas have been captured yet.", ""])
     parsed, groups = parse_issues(issues)
-    lines += generate_mermaid(groups)
+    lines += generate_mermaid(parsed)
     lines += ["", "## 💭 All ideas", ""]
     lines += generate_table(parsed)
     lines += ["", "> Dates come directly from GitHub Issue creation timestamps; no separate capture-date field is required.", ""]
@@ -141,7 +147,7 @@ def generate_home(issues):
         f"Captured **{human_date(latest_date)}** · {state_label(latest_issue)}", "",
         "## 🗓️ Idea timeline", ""
     ]
-    lines += generate_mermaid(groups)
+    lines += generate_mermaid(parsed, limit=12)
     lines += ["", "## 💭 Latest ideas", ""]
     lines += generate_table(parsed, limit=10, newest_first=True)
     if total > 10:
