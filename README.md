@@ -14,9 +14,9 @@ A lightweight home for thoughts, sparks, and half-formed concepts before they be
 
 ## ⚡ Quick actions
 
-| ✍️ Capture | 💡 Browse | 🧭 Roadmap | 🕒 History |
-| --- | --- | --- | --- |
-| **[New idea](https://github.com/afnannuzulasugihartono/brain-dump/issues/new/choose)** | **[All ideas](https://github.com/afnannuzulasugihartono/brain-dump/issues)** | **[Brain Dump project](https://github.com/users/afnannuzulasugihartono/projects/1/views/1)** | **[Full timeline](TIMELINE.md)** |
+| 🌐 Dashboard | ✍️ Capture | 💡 Browse | 🧭 Roadmap | 🕒 History |
+| --- | --- | --- | --- | --- |
+| **[Open Brain Dump](https://afnannuzulasugihartono.github.io/brain-dump/)** | **[New idea](https://github.com/afnannuzulasugihartono/brain-dump/issues/new/choose)** | **[All ideas](https://github.com/afnannuzulasugihartono/brain-dump/issues)** | **[Brain Dump project](https://github.com/users/afnannuzulasugihartono/projects/1/views/1)** | **[Full timeline](TIMELINE.md)** |
 
 > **Principle:** capture first. Organize later. Build only when an idea is ready.
 
