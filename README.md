@@ -1,18 +1,41 @@
-# Brain Dump
+<div align="center">
 
-A lightweight place to capture ideas before they become projects.
+# 🧠 Brain Dump
 
-## Capture
+### Capture now. Decide later.
+
+A lightweight home for thoughts, sparks, and half-formed concepts before they become real projects.
 
 **One idea = one GitHub Issue.**
 
-Use the **New idea** issue template, write the thought quickly, and move on. The idea does not need to be polished.
+</div>
 
-## Visual timeline
+---
 
-The timeline below is generated automatically from each Issue's original GitHub `created_at` timestamp. You do **not** need to enter a capture date manually.
+## ⚡ Quick actions
+
+| ✍️ Capture | 💡 Browse | 🧭 Roadmap | 🕒 History |
+| --- | --- | --- | --- |
+| **[New idea](https://github.com/afnannuzulasugihartono/brain-dump/issues/new/choose)** | **[All ideas](https://github.com/afnannuzulasugihartono/brain-dump/issues)** | **[Brain Dump project](https://github.com/users/afnannuzulasugihartono/projects/1/views/1)** | **[Full timeline](TIMELINE.md)** |
+
+> **Principle:** capture first. Organize later. Build only when an idea is ready.
+
+---
 
 <!-- TIMELINE:START -->
+## 📊 Snapshot
+
+| 💡 Total ideas | 🟢 Open | ✅ Closed | 🕒 Latest capture |
+| ---: | ---: | ---: | --- |
+| 1 | 1 | 0 | 23 Sep 2026 |
+
+## ✨ Latest spark
+
+**[#1 — [Idea] Test visualization](https://github.com/afnannuzulasugihartono/brain-dump/issues/1)**  
+Captured **23 Sep 2026** · 🟢 Open
+
+## 🗓️ Idea timeline
+
 ```mermaid
 gantt
     title Brain Dump — Ideas by creation date
@@ -22,37 +45,43 @@ gantt
     #1 [Idea] Test visualization :milestone, idea1, 2026-09-23, 0d
 ```
 
-### Latest ideas
+## 💭 Latest ideas
 
 | Date | Idea | State |
 | --- | --- | --- |
-| 2026-09-23 | [#1 [Idea] Test visualization](https://github.com/afnannuzulasugihartono/brain-dump/issues/1) | Open |
+| 23 Sep 2026 | [#1 [Idea] Test visualization](https://github.com/afnannuzulasugihartono/brain-dump/issues/1) | 🟢 Open |
 <!-- TIMELINE:END -->
 
-For the full view, open **[TIMELINE.md](TIMELINE.md)**.
+<sub>The dashboard above is generated automatically from GitHub Issue timestamps. No manual date entry is required.</sub>
 
-Whenever an idea is opened, edited, closed, reopened, labeled, or unlabeled, GitHub Actions regenerates both this homepage section and the full timeline.
+---
 
-## Idea lifecycle
+## 🌱 How ideas move
+
+| 1. Capture | 2. Explore | 3. Promote | 4. Archive |
+| --- | --- | --- | --- |
+| Write it down before it disappears. | Add context only when useful. | Turn promising ideas into a real project/spec. | Close ideas that no longer matter. |
 
 `Inbox → Exploring → Promising → Project → Archived`
 
-An idea can stay in Inbox forever. Moving it forward is a deliberate decision.
+Ideas are allowed to remain unfinished. Promotion is deliberate.
 
-## Dates
+---
 
-- **Created** — automatic; the original GitHub Issue creation time and the source of truth for the timeline.
-- **Review on** — optional future date if an idea should be revisited.
-- **Updated / Closed** — GitHub-native timestamps that can also be used for sorting and filtering in Projects.
+## 🧭 Source of truth
 
-## GitHub Projects
+- **Created** — the original GitHub Issue creation timestamp.
+- **Updated / Closed** — GitHub-native timestamps.
+- **[TIMELINE.md](TIMELINE.md)** — complete chronological history.
+- **[Brain Dump Project](https://github.com/users/afnannuzulasugihartono/projects/1/views/1)** — roadmap/project view.
 
-A Projects table can show and sort the native **Created**, **Updated**, and **Closed** timestamp fields.
+<details>
+<summary><strong>🤖 Guidance for AI agents</strong></summary>
 
-For a Roadmap layout, GitHub currently requires a custom Date or Iteration field, so the repository timeline intentionally uses the Issue creation timestamp directly instead of asking you to duplicate the date manually.
+<br>
 
-## Rule for AI agents
+Content in this repository is **brainstorming material**.
 
-Content in this repository is brainstorming material.
+Do **not** treat an idea as an approved requirement, roadmap item, or implementation task unless it is explicitly promoted into a real project or spec.
 
-Do not treat an idea as an approved requirement, roadmap item, or implementation task unless it is explicitly promoted to a project/spec.
+</details>
