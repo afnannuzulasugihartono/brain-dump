@@ -171,7 +171,7 @@ AI review uses a provider boundary instead of spreading provider-specific logic 
 
 Conceptual interface: evaluate_idea(idea) → insight.
 
-Prefer a free or generous-quota provider when practical.
+Prefer a free or generous-quota provider when practical. Provider credentials are supplied only through GitHub Actions secrets or equivalent GitHub-managed secret configuration; they are never written to repository files or frontend JavaScript. If no provider credential is configured, AI review enters the same safe degraded mode as an unavailable provider.
 
 If the provider is unavailable, rate-limited, times out, or produces invalid output:
 - the main site still deploys;
@@ -337,6 +337,8 @@ During implementation:
 - keep AI evaluation separate from canonical generation;
 - keep generated data separate from source code.
 
+Frontend modules use native browser ES modules loaded with type=module. No bundler, package manager, or compile step is introduced for the browser code.
+
 ## 11. Workflow boundaries
 
 ### 11.1 Main sync workflow
@@ -363,6 +365,8 @@ ai-review.yml responsibilities:
 - update only AI insight generated data.
 
 It must not edit GitHub Issues. Its failure must not block main sync/deploy.
+
+When AI review produces a changed docs/data/ai-insights.json, it commits only that generated file to main. That docs/data change may trigger the normal sync/deploy workflow, which deploys the updated static site. The canonical generator must never overwrite ai-insights.json, preventing a generated-data ownership loop.
 
 ## 12. Agent contract updates
 
