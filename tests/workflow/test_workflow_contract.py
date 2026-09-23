@@ -29,6 +29,11 @@ class WorkflowContractTests(unittest.TestCase):
         self.assertIn("docs/data/ideas.json", generated)
         self.assertNotIn("ai-insights.json", generated)
 
+    def test_sync_has_explicit_python_compile_gate(self):
+        text = SYNC.read_text(encoding="utf-8")
+        self.assertIn("python3 -m py_compile", text)
+        self.assertIn("scripts/generate/issues.py", text)
+
     def test_sync_retry_refreshes_latest_main(self):
         text = SYNC.read_text(encoding="utf-8")
         self.assertIn("git fetch origin main", text)

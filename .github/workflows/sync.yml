@@ -37,6 +37,9 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Compile Python sources
+        run: python3 -m py_compile scripts/generate_timeline.py scripts/generate/issues.py scripts/validate_generated.py
+
       - name: Run Python tests
         run: python3 -m unittest discover -s tests -v
 
@@ -75,6 +78,7 @@ jobs:
             echo "Push attempt $attempt failed; refreshing from latest main."
             git fetch origin main
             git reset --hard origin/main
+            python3 -m py_compile scripts/generate_timeline.py scripts/generate/issues.py scripts/validate_generated.py
             python3 -m unittest discover -s tests -v
             node --experimental-default-type=module --test tests/frontend/scoring.test.js tests/frontend/data.test.js
             python3 scripts/generate_timeline.py
