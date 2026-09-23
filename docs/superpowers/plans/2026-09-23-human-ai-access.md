@@ -87,13 +87,13 @@ class AIContractTests(unittest.TestCase):
         self.assertIn("401", text)
         self.assertIn("403", text)
         self.assertIn("stop", lowered)
-        self.assertNotIn("bypass", lowered)
+        self.assertIn("do not attempt an alternate write path", lowered)
 
-    def test_issue_template_keeps_canonical_sections_and_ai_notes(self):
+    def test_issue_template_stays_human_first_and_keeps_canonical_sections(self):
         text = (ROOT / ".github" / "ISSUE_TEMPLATE" / "idea.yml").read_text(encoding="utf-8")
         for label in ("Idea", "Why it might matter", "Initial stage", "Category", "Brain-dump rule"):
             self.assertIn(f"label: {label}", text)
-        self.assertIn("AI Notes", text)
+        self.assertNotIn("label: AI Notes", text)
 
 
 if __name__ == "__main__":
@@ -108,7 +108,7 @@ Run:
 python3 -m unittest tests.test_ai_contract -v
 ```
 
-Expected: FAIL because `AGENTS.md`, `docs/ai-access.md`, and the AI Notes template field do not exist yet.
+Expected: FAIL because `AGENTS.md` and `docs/ai-access.md` do not exist yet.
 
 - [ ] **Step 3: Create `AGENTS.md` with the concise agent rules**
 
@@ -170,20 +170,25 @@ curl -H "Authorization: Bearer $GITHUB_TOKEN" \
 
 For writes, show JSON bodies with placeholders such as `"title": "[Idea] Example"` and a canonical Markdown body. State that an agent must re-read the Issue immediately before a material PATCH.
 
-- [ ] **Step 5: Add optional AI Notes to the Issue template**
+- [ ] **Step 5: Keep the Issue form human-first**
 
-Append a textarea after `Related links or context`:
+Do not expose an `AI Notes` field in the human Issue form. AI appends `## AI Notes` through the GitHub API only when it actually contributes context.
+
+Simplify the top-level template copy without changing canonical field labels:
 
 ```yaml
-  - type: textarea
-    id: ai_notes
-    attributes:
-      label: AI Notes
-      description: Optional. Context added by an authenticated AI agent. Human-written sections above remain canonical.
-      placeholder: AI-added context, clarification, or research...
+name: New idea
+description: Add a note or idea.
+title: "[Idea] "
 ```
 
-Do not make it required.
+Change the Idea placeholder to:
+
+```yaml
+placeholder: What's on your mind?
+```
+
+Keep the existing `Idea`, `Why it might matter`, `Initial stage`, `Category`, `Related links or context`, and `Brain-dump rule` fields intact.
 
 - [ ] **Step 6: Run the AI contract tests**
 
@@ -721,7 +726,7 @@ git commit -m "docs: align Brain Dump repository with human AI access model"
 **Files:**
 - Modify: `.github/workflows/sync-brain-dump.yml`
 - Create: `tests/test_workflow_contract.py`
-- Possibly modify: `docs/ai-access.md` only if live verification exposes a documentation mismatch
+- Modify if verification requires a correction: `docs/ai-access.md`
 
 **Interfaces:**
 - Consumes: Issue events from humans or authenticated AI, generator output from Tasks 2–4.
@@ -751,9 +756,11 @@ class WorkflowContractTests(unittest.TestCase):
         self.assertIn("issues: read", text)
         self.assertNotIn("issues: write", text)
 
-    def test_generated_push_rebases_before_push(self):
+    def test_generated_push_refreshes_from_latest_main_before_retry(self):
         text = WORKFLOW.read_text(encoding="utf-8")
-        self.assertIn("git pull --rebase origin main", text)
+        self.assertIn("git fetch origin main", text)
+        self.assertIn("git reset --hard origin/main", text)
+        self.assertIn("python3 scripts/generate_timeline.py", text)
         self.assertIn("git push origin HEAD:main", text)
 
 
@@ -769,7 +776,7 @@ Run:
 python3 -m unittest tests.test_workflow_contract -v
 ```
 
-Expected: FAIL because the current workflow pushes generated commits without rebasing against a concurrently updated `main`.
+Expected: FAIL because the current workflow pushes generated commits without refreshing from a concurrently updated `main`.
 
 - [ ] **Step 3: Make the generated-content push race-resistant**
 
@@ -777,10 +784,14 @@ Replace the push section after committing generated output with a bounded retry:
 
 ```yaml
       - name: Commit generated content when changed
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md TIMELINE.md docs/ideas.json assets/idea-journey-light.svg assets/idea-journey-dark.svg
+
+          GENERATED="README.md TIMELINE.md docs/ideas.json assets/idea-journey-light.svg assets/idea-journey-dark.svg"
+          git add $GENERATED
           if git diff --cached --quiet; then
             echo "Generated content unchanged."
             exit 0
@@ -789,10 +800,22 @@ Replace the push section after committing generated output with a bounded retry:
           git commit -m "docs: sync brain dump"
 
           for attempt in 1 2 3; do
-            if git pull --rebase origin main && git push origin HEAD:main; then
+            if git push origin HEAD:main; then
               exit 0
             fi
-            git rebase --abort || true
+
+            echo "Push attempt $attempt failed; refreshing from latest main."
+            git fetch origin main
+            git reset --hard origin/main
+            python3 scripts/generate_timeline.py
+            git add $GENERATED
+
+            if git diff --cached --quiet; then
+              echo "Latest main already contains equivalent generated content."
+              exit 0
+            fi
+
+            git commit -m "docs: sync brain dump"
             sleep $((attempt * 2))
           done
 
