@@ -10,11 +10,15 @@ Use the **New idea** issue template, write the thought quickly, and move on. The
 
 ## Visual timeline
 
-Open **[TIMELINE.md](TIMELINE.md)** to see ideas visualized by the date they were created.
+The timeline below is generated automatically from each Issue's original GitHub `created_at` timestamp. You do **not** need to enter a capture date manually.
 
-The timeline is generated automatically from each Issue's original GitHub `created_at` timestamp. You do **not** need to enter a capture date manually.
+<!-- TIMELINE:START -->
+> No ideas have been captured yet. Create an Issue using the **New idea** template and the timeline will appear here automatically.
+<!-- TIMELINE:END -->
 
-Whenever an idea is opened, edited, closed, reopened, labeled, or unlabeled, GitHub Actions regenerates the timeline.
+For the full view, open **[TIMELINE.md](TIMELINE.md)**.
+
+Whenever an idea is opened, edited, closed, reopened, labeled, or unlabeled, GitHub Actions regenerates both this homepage section and the full timeline.
 
 ## Idea lifecycle
 
