@@ -16,6 +16,10 @@ curl -H "Authorization: Bearer $GITHUB_TOKEN" \
 
 If GitHub returns **401** or **403**, stop and report the authorization failure. Do not attempt an alternate write path.
 
+## Sync eligibility
+
+Brain Dump syncs Issues authored by the repository owner or an account GitHub identifies as a repository **COLLABORATOR** or **MEMBER**. Public outsider Issues are ignored by the generated Brain Dump index.
+
 ## Read endpoints
 
 - `GET /repos/{owner}/{repo}/issues`
