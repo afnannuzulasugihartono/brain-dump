@@ -1,7 +1,9 @@
 # Brain Dump Review Intelligence, Ticker, and Conservative Repo Cleanup
 
 Date: 2026-09-23
-Status: Design approved in brainstorming; awaiting written-spec review
+Status: Implemented on main; post-merge production acceptance performed
+
+Acceptance note: desktop production behavior and browser console were observed live. Mobile ticker and reduced-motion behavior are enforced by deployed CSS plus regression tests; the final browser harness could not resize the viewport or emulate media preferences, so those two checks remain source/test-verified rather than live-emulated. Optional AI provider configuration remains absent, with safe degraded mode verified.
 
 ## 1. Purpose
 
