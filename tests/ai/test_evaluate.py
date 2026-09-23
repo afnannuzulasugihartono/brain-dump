@@ -1,5 +1,7 @@
 import json
+import os
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -42,6 +44,51 @@ class AIReviewTests(unittest.TestCase):
                "signals":[],"confidence":0.7,"depth":"brief",
                "evaluatedAt":"2026-09-22T12:00:00Z"}
         self.assertEqual(merge_insights([old], []), [old])
+
+    def test_timeout_preserves_old_valid_insight(self):
+        from scripts.ai.evaluate import evaluate_ideas
+        old = {"issueNumber":7,"summary":"Old","suggestedAction":"revisit",
+               "signals":[],"confidence":0.7,"depth":"brief",
+               "evaluatedAt":"2026-09-22T12:00:00Z"}
+        idea = {"number":7,"title":"Idea"}
+
+        def timeout(*args, **kwargs):
+            raise TimeoutError("provider timeout")
+
+        merged, updated = evaluate_ideas(
+            [idea], [old],
+            evaluated_at="2026-09-23T12:00:00Z",
+            base_url="https://example.test", api_key="key", model="model",
+            request_func=timeout,
+        )
+        self.assertEqual(merged, [old])
+        self.assertEqual(updated, 0)
+
+    def test_rate_limit_preserves_old_valid_insight(self):
+        from scripts.ai.evaluate import evaluate_ideas
+        old = {"issueNumber":7,"summary":"Old","suggestedAction":"revisit",
+               "signals":[],"confidence":0.7,"depth":"brief",
+               "evaluatedAt":"2026-09-22T12:00:00Z"}
+        idea = {"number":7,"title":"Idea"}
+
+        def rate_limit(*args, **kwargs):
+            raise RuntimeError("HTTP 429 Too Many Requests")
+
+        merged, updated = evaluate_ideas(
+            [idea], [old],
+            evaluated_at="2026-09-23T12:00:00Z",
+            base_url="https://example.test", api_key="key", model="model",
+            request_func=rate_limit,
+        )
+        self.assertEqual(merged, [old])
+        self.assertEqual(updated, 0)
+
+    @patch.dict(os.environ, {"AI_BASE_URL":"", "AI_API_KEY":"", "AI_MODEL":""})
+    @patch("scripts.ai.evaluate._write_document")
+    def test_missing_provider_exits_cleanly_without_writing(self, write_document):
+        from scripts.ai.evaluate import main
+        self.assertEqual(main([]), 0)
+        write_document.assert_not_called()
 
     def test_markdown_fenced_provider_json_is_rejected(self):
         from scripts.ai.providers.openai_compatible import parse_provider_content
