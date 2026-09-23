@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate a GitHub-rendered idea timeline from issue creation timestamps."""
+"""Generate GitHub-rendered idea timelines from issue creation timestamps."""
 
 from __future__ import annotations
 
@@ -14,6 +14,8 @@ from pathlib import Path
 
 
 API = "https://api.github.com"
+START_MARKER = "<!-- TIMELINE:START -->"
+END_MARKER = "<!-- TIMELINE:END -->"
 
 
 def api_get(url: str, token: str):
@@ -59,7 +61,52 @@ def markdown_escape(text: str) -> str:
     return text.replace("|", "\\|").replace("\n", " ")
 
 
-def generate(issues):
+def parse_issues(issues):
+    parsed = []
+    groups = defaultdict(list)
+    for issue in issues:
+        created = datetime.fromisoformat(issue["created_at"].replace("Z", "+00:00"))
+        parsed.append((created, issue))
+        groups[(created.year, created.month)].append((created, issue))
+    return parsed, groups
+
+
+def generate_mermaid(groups):
+    lines = [
+        "```mermaid",
+        "gantt",
+        "    title Brain Dump — Ideas by creation date",
+        "    dateFormat YYYY-MM-DD",
+        "    axisFormat %d %b %Y",
+    ]
+    for year, month in sorted(groups):
+        lines.append(f"    section {calendar.month_abbr[month]} {year}")
+        for created, issue in groups[(year, month)]:
+            title = clean_mermaid(issue.get("title", "Untitled idea"))
+            number = issue["number"]
+            day = created.strftime("%Y-%m-%d")
+            lines.append(f"    #{number} {title} :milestone, idea{number}, {day}, 0d")
+    lines.append("```")
+    return lines
+
+
+def generate_table(parsed, limit=None):
+    rows = parsed if limit is None else parsed[-limit:]
+    lines = [
+        "| Date | Idea | State |",
+        "| --- | --- | --- |",
+    ]
+    for created, issue in rows:
+        date = created.strftime("%Y-%m-%d")
+        title = markdown_escape(issue.get("title", "Untitled idea"))
+        number = issue["number"]
+        url = issue["html_url"]
+        state = issue.get("state", "open").capitalize()
+        lines.append(f"| {date} | [#{number} {title}]({url}) | {state} |")
+    return lines
+
+
+def generate_full(issues):
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     lines = [
         "# Brain Dump Timeline",
@@ -77,55 +124,51 @@ def generate(issues):
         ]
         return "\n".join(lines)
 
-    groups = defaultdict(list)
-    parsed = []
-    for issue in issues:
-        created = datetime.fromisoformat(issue["created_at"].replace("Z", "+00:00"))
-        parsed.append((created, issue))
-        groups[(created.year, created.month)].append((created, issue))
-
-    lines += [
-        "```mermaid",
-        "gantt",
-        "    title Brain Dump — Ideas by creation date",
-        "    dateFormat YYYY-MM-DD",
-        "    axisFormat %d %b %Y",
-    ]
-
-    for year, month in sorted(groups):
-        section = f"{calendar.month_abbr[month]} {year}"
-        lines.append(f"    section {section}")
-        for created, issue in groups[(year, month)]:
-            title = clean_mermaid(issue.get("title", "Untitled idea"))
-            number = issue["number"]
-            day = created.strftime("%Y-%m-%d")
-            lines.append(
-                f"    #{number} {title} :milestone, idea{number}, {day}, 0d"
-            )
-
-    lines += [
-        "```",
-        "",
-        "## Ideas",
-        "",
-        "| Date | Idea | State |",
-        "| --- | --- | --- |",
-    ]
-
-    for created, issue in parsed:
-        date = created.strftime("%Y-%m-%d")
-        title = markdown_escape(issue.get("title", "Untitled idea"))
-        number = issue["number"]
-        url = issue["html_url"]
-        state = issue.get("state", "open").capitalize()
-        lines.append(f"| {date} | [#{number} {title}]({url}) | {state} |")
-
+    parsed, groups = parse_issues(issues)
+    lines += generate_mermaid(groups)
+    lines += ["", "## Ideas", ""]
+    lines += generate_table(parsed)
     lines += [
         "",
-        "> The date shown here is the immutable creation time of the GitHub Issue, so no separate capture-date field is required.",
+        "> The date shown here comes directly from the GitHub Issue creation timestamp, so no separate capture-date field is required.",
         "",
     ]
     return "\n".join(lines)
+
+
+def generate_home(issues):
+    if not issues:
+        return (
+            "> No ideas have been captured yet. Create an Issue using the "
+            "**New idea** template and the timeline will appear here automatically."
+        )
+
+    parsed, groups = parse_issues(issues)
+    lines = generate_mermaid(groups)
+    lines += ["", "### Latest ideas", ""]
+    lines += generate_table(parsed, limit=10)
+    if len(parsed) > 10:
+        lines += ["", f"_Showing the latest 10 of {len(parsed)} ideas. Open [TIMELINE.md](TIMELINE.md) for the full history._"]
+    return "\n".join(lines)
+
+
+def update_readme(home_block):
+    path = Path("README.md")
+    text = path.read_text(encoding="utf-8")
+    if START_MARKER not in text or END_MARKER not in text:
+        raise RuntimeError("README timeline markers are missing.")
+    before, rest = text.split(START_MARKER, 1)
+    _, after = rest.split(END_MARKER, 1)
+    updated = (
+        before
+        + START_MARKER
+        + "\n"
+        + home_block.rstrip()
+        + "\n"
+        + END_MARKER
+        + after
+    )
+    path.write_text(updated, encoding="utf-8")
 
 
 def main():
@@ -140,8 +183,10 @@ def main():
         issue for issue in get_issues(repo, token)
         if issue.get("user", {}).get("login", "").lower() == owner
     ]
-    Path("TIMELINE.md").write_text(generate(issues), encoding="utf-8")
-    print(f"Generated TIMELINE.md from {len(issues)} issue(s).")
+
+    Path("TIMELINE.md").write_text(generate_full(issues), encoding="utf-8")
+    update_readme(generate_home(issues))
+    print(f"Generated timeline views from {len(issues)} issue(s).")
 
 
 if __name__ == "__main__":
