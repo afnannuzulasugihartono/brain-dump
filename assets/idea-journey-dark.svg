@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="268" viewBox="0 0 960 268" role="img" aria-labelledby="title desc">
+<title id="title">Brain Dump Idea Journey</title>
+<desc id="desc">Chronological timeline of captured ideas from GitHub Issues.</desc>
+<defs>
+<linearGradient id="accent" x1="0" x2="1"><stop offset="0%" stop-color="#58a6ff"/><stop offset="100%" stop-color="#a371f7"/></linearGradient>
+</defs>
+<rect width="100%" height="100%" rx="18" fill="#0d1117"/>
+<text x="38" y="40" fill="#f0f6fc" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="22" font-weight="700">Idea Journey</text>
+<text x="38" y="66" fill="#8b949e" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13">A chronological stream of captured thoughts</text>
+<rect x="38" y="82" width="884" height="1" fill="#30363d"/>
+<text x="922" y="38" text-anchor="end" fill="#8b949e" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12">1 IDEAS  ·  1 OPEN  ·  0 CLOSED</text>
+<rect x="479" y="142" width="2" height="62" rx="1" fill="#30363d"/>
+<rect x="439.0" y="114" width="82" height="22" rx="11" fill="#13233a"/>
+<text x="480" y="129" text-anchor="middle" fill="#79c0ff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="10" font-weight="700">SEP 2026</text>
+<line x1="428" y1="184" x2="480" y2="184" stroke="#30363d" stroke-width="2"/>
+<circle cx="480" cy="184" r="7" fill="#0d1117" stroke="#3fb950" stroke-width="3"/>
+<circle cx="480" cy="184" r="2.5" fill="#3fb950"/>
+<rect x="38" y="142" width="390" height="84" rx="14" fill="#111d2f" stroke="#58a6ff" stroke-width="1.6"/>
+<rect x="38" y="142" width="4" height="84" rx="2" fill="#3fb950"/>
+<text x="58" y="167" fill="#8b949e" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11" font-weight="600">#1  ·  23 Sep 2026</text>
+<text x="58" y="190" fill="#f0f6fc" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="700">Test visualization</text>
+<rect x="58" y="202" width="54" height="17" rx="8.5" fill="#3fb950"/>
+<text x="85.0" y="214" text-anchor="middle" fill="#0d1117" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="9" font-weight="700">OPEN</text>
+<rect x="119" y="202" width="54" height="17" rx="8.5" fill="#21262d"/>
+<text x="146.0" y="214" text-anchor="middle" fill="#c9d1d9" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="9" font-weight="700">INBOX</text>
+<rect x="180" y="202" width="54" height="17" rx="8.5" fill="#21262d"/>
+<text x="207.0" y="214" text-anchor="middle" fill="#c9d1d9" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="9" font-weight="700">OTHER</text>
+<rect x="370" y="150" width="46" height="18" rx="9" fill="url(#accent)"/>
+<text x="393.0" y="163" text-anchor="middle" fill="#ffffff" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="9" font-weight="700">LATEST</text>
+<text x="480" y="254" text-anchor="middle" fill="#8b949e" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="10">Generated automatically from GitHub Issue creation timestamps</text>
+</svg>
