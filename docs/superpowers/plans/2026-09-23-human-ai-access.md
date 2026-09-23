@@ -10,7 +10,7 @@
 
 **Spec:** `docs/superpowers/specs/2026-09-23-human-ai-access-design.md`
 
-**Implementation status (reconciled 23 September 2026):** Implemented and accepted on `main`. The temporary API acceptance Issue was created, edited with an audit comment, archived, and closed. The later Review Intelligence plan superseded the old monolithic frontend paths and renamed `sync-brain-dump.yml` to `sync.yml`. The unchecked step boxes below are retained as the original execution recipe rather than retroactively claiming that every historical RED/GREEN command was run exactly as written.
+**Implementation status (reconciled 23 September 2026):** Implemented and accepted on `main`. The temporary API acceptance Issue was created, edited with an audit comment, archived, and closed. The later Review Intelligence plan superseded the old monolithic frontend paths and renamed `sync-brain-dump.yml` to `sync.yml`. The unchecked step boxes below are retained as the original execution recipe rather than retroactively claiming that every historical RED/GREEN command was run exactly as written. Historical task snippets intentionally retain pre-cleanup names such as `docs/ideas.json` and `sync-brain-dump.yml`; the current runtime names are recorded above and in the later Review Intelligence plan.
 
 
 ## Global Constraints
@@ -121,7 +121,7 @@ Write the root file with these exact sections:
 # Brain Dump Agent Contract
 
 ## Source of truth
-GitHub Issues are the source of truth. `docs/data/ideas.json`, README summaries, timeline files, and Pages output are generated read-only views. Never write to generated data as a substitute for editing an Issue.
+GitHub Issues are the source of truth. `docs/ideas.json`, README summaries, timeline files, and Pages output are generated read-only views. Never write to generated data as a substitute for editing an Issue.
 
 ## Before changing an idea
 Re-read the canonical Issue immediately before a material edit. Preserve all human-authored content, including content added after an earlier read.
@@ -161,7 +161,7 @@ Document:
 - stage rules;
 - archive/project gates;
 - 401/403 stop behavior;
-- note that `docs/data/ideas.json` is discovery-only.
+- note that `docs/ideas.json` is discovery-only.
 
 Use request examples that never embed a real token. Example shell shape:
 
@@ -220,7 +220,7 @@ git commit -m "docs: define Brain Dump AI access contract"
 
 **Interfaces:**
 - Consumes: canonical GitHub Issue Markdown sections.
-- Produces: each `docs/data/ideas.json` item keeps existing keys and adds `idea` and `aiNotes`; existing Pages fields remain backward compatible.
+- Produces: each `docs/ideas.json` item keeps existing keys and adds `idea` and `aiNotes`; existing Pages fields remain backward compatible.
 
 - [ ] **Step 1: Write generator regression tests**
 
@@ -367,7 +367,7 @@ git commit -m "feat: expose AI notes in generated idea index"
 - Create: `tests/test_static_ui.py`
 
 **Interfaces:**
-- Consumes: `docs/data/ideas.json` with existing fields plus optional `idea` and `aiNotes`.
+- Consumes: `docs/ideas.json` with existing fields plus optional `idea` and `aiNotes`.
 - Produces: a read-only human interface whose primary view is `Notes`; all writes route to GitHub.
 
 - [ ] **Step 1: Write static UI regression tests**
@@ -884,7 +884,7 @@ Created as a temporary end-to-end verification of the documented AI path.
 
 Then wait for the sync workflow and verify:
 - the workflow succeeds;
-- the Issue appears in `docs/data/ideas.json`;
+- the Issue appears in `docs/ideas.json`;
 - `idea` and `aiNotes` are present in generated JSON;
 - Pages shows the note in Notes view;
 - README recent ideas links to the Issue.
@@ -902,7 +902,7 @@ AI update:
 ```
 
 Verify after sync that:
-- stage is `Exploring` in `docs/data/ideas.json`;
+- stage is `Exploring` in `docs/ideas.json`;
 - comment remains on the Issue;
 - Pages still renders correctly.
 
@@ -939,7 +939,7 @@ Verify the next sync succeeds and that the closed test Issue is represented cons
 Run or inspect:
 - latest `Sync Brain Dump` workflow conclusion = success;
 - `AGENTS.md` and `docs/ai-access.md` are present on `main`;
-- `docs/data/ideas.json` is generated, not manually edited;
+- `docs/ideas.json` is generated, not manually edited;
 - GitHub Pages is live;
 - all Python tests pass;
 - no generated file is treated as authoritative in docs.
