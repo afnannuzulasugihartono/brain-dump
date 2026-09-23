@@ -1,0 +1,63 @@
+name: Sync Brain Dump
+
+on:
+  issues:
+    types: [opened, edited, closed, reopened, labeled, unlabeled]
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "scripts/**"
+      - ".github/workflows/sync-brain-dump.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: brain-dump-sync
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    if: github.event_name != 'issues' || github.event.issue.user.login == github.repository_owner
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Generate Brain Dump
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/generate_timeline.py
+
+      - name: Commit generated content when changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md TIMELINE.md docs/ideas.json assets/idea-journey-light.svg assets/idea-journey-dark.svg
+          if git diff --cached --quiet; then
+            echo "Generated content unchanged."
+          else
+            git commit -m "docs: sync brain dump"
+            git push
+          fi
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./docs
+
+      - name: Deploy site
+        id: deployment
+        uses: actions/deploy-pages@v4
