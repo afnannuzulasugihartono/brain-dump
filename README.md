@@ -13,7 +13,20 @@ Use the **New idea** issue template, write the thought quickly, and move on. The
 The timeline below is generated automatically from each Issue's original GitHub `created_at` timestamp. You do **not** need to enter a capture date manually.
 
 <!-- TIMELINE:START -->
-> No ideas have been captured yet. Create an Issue using the **New idea** template and the timeline will appear here automatically.
+```mermaid
+gantt
+    title Brain Dump — Ideas by creation date
+    dateFormat YYYY-MM-DD
+    axisFormat %d %b %Y
+    section Sep 2026
+    #1 [Idea] Test visualization :milestone, idea1, 2026-09-23, 0d
+```
+
+### Latest ideas
+
+| Date | Idea | State |
+| --- | --- | --- |
+| 2026-09-23 | [#1 [Idea] Test visualization](https://github.com/afnannuzulasugihartono/brain-dump/issues/1) | Open |
 <!-- TIMELINE:END -->
 
 For the full view, open **[TIMELINE.md](TIMELINE.md)**.
