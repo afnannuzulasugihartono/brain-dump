@@ -65,7 +65,7 @@ def display_title(value: str) -> str:
 
 def parse_field(body: str, heading: str, fallback: str) -> str:
     match = re.search(
-        rf"(?ims)^##\s+{re.escape(heading)}\s*\n+(.+?)(?=\n##\s+|\Z)",
+        rf"(?ims)^#{{2,6}}\s+{re.escape(heading)}\s*\n+(.+?)(?=\n#{{2,6}}\s+|\Z)",
         body or "",
     )
     if not match:
@@ -75,7 +75,7 @@ def parse_field(body: str, heading: str, fallback: str) -> str:
 
 def parse_section(body: str, heading: str, fallback: str = "") -> str:
     match = re.search(
-        rf"(?ims)^##\s+{re.escape(heading)}\s*\n+(.+?)(?=\n##\s+|\Z)",
+        rf"(?ims)^#{{2,6}}\s+{re.escape(heading)}\s*\n+(.+?)(?=\n#{{2,6}}\s+|\Z)",
         body or "",
     )
     if not match:
