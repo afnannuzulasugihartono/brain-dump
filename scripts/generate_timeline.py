@@ -72,6 +72,16 @@ def parse_field(body: str, heading: str, fallback: str) -> str:
     value = " ".join(match.group(1).strip().splitlines()[0].split())
     return value or fallback
 
+def parse_section(body: str, heading: str, fallback: str = "") -> str:
+    match = re.search(
+        rf"(?ims)^##\s+{re.escape(heading)}\s*\n+(.+?)(?=\n##\s+|\Z)",
+        body or "",
+    )
+    if not match:
+        return fallback
+    value = match.group(1).strip()
+    return value or fallback
+
 def parse_issues(issues):
     parsed = []
     for issue in issues:
@@ -107,6 +117,8 @@ def generate_ideas_json(parsed):
             "stage": effective_stage(issue),
             "category": parse_field(body, "Category", "Other"),
             "why": parse_field(body, "Why it might matter", ""),
+            "idea": parse_section(body, "Idea", ""),
+            "aiNotes": parse_section(body, "AI Notes", ""),
             "createdAt": issue["created_at"],
             "updatedAt": issue.get("updated_at") or issue["created_at"],
             "closedAt": issue.get("closed_at"),
