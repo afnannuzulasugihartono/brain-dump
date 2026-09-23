@@ -1,0 +1,57 @@
+name: New idea
+description: Capture an idea quickly before it gets lost.
+title: "[Idea] "
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: Idea
+      description: Write the idea in the simplest form possible.
+      placeholder: What came to mind?
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it might matter
+      description: Optional. What problem, opportunity, or curiosity is behind it?
+      placeholder: Why is this worth remembering?
+
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Initial stage
+      options:
+        - Inbox
+        - Exploring
+        - Promising
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - Product
+        - Software
+        - Business
+        - Content
+        - Research
+        - Personal
+        - Other
+
+  - type: textarea
+    id: links
+    attributes:
+      label: Related links or context
+      placeholder: URLs, related repos, notes, conversations, references...
+
+  - type: checkboxes
+    id: status
+    attributes:
+      label: Brain-dump rule
+      options:
+        - label: This is a raw idea, not an approved implementation task.
+          required: true
