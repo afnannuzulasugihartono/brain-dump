@@ -188,13 +188,10 @@ def picture_block():
 def generate_home(parsed):
     total = len(parsed)
     open_count = sum(1 for _, issue in parsed if issue.get("state", "open") == "open")
-    promising = sum(1 for _, issue in parsed if effective_stage(issue).lower() == "promising")
-    promoted = sum(1 for _, issue in parsed if effective_stage(issue).lower() == "project")
     lines = [
-        "## Overview", "",
-        f"**{total} idea{'s' if total != 1 else ''}** · **{open_count} open** · **{promising} promising** · **{promoted} promoted**",
-        "",
         "## Recent ideas", "",
+        f"_{total} idea{'s' if total != 1 else ''} · {open_count} open_",
+        "",
     ]
 
     rows = list(reversed(parsed))[:RECENT_LIMIT]
