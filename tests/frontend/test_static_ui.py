@@ -100,6 +100,9 @@ class StaticUITests(unittest.TestCase):
         self.assertIn(":focus-within", css)
         self.assertIn("@media(max-width:620px)", css)
         self.assertIn("@keyframes ticker-scroll", css)
+        compact = css.replace(" ", "").replace("\n", "")
+        self.assertIn("@media(prefers-reduced-motion:reduce){.ticker-track{animation:none;transform:none}", compact)
+        self.assertIn("@media(max-width:620px){.ticker{position:relative;", compact)
 
 
 if __name__ == "__main__":
