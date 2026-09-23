@@ -2,7 +2,7 @@ import json
 import unittest
 from datetime import datetime
 
-from scripts.generate_timeline import effective_stage, generate_ideas_json, parse_section
+from scripts.generate_timeline import effective_stage, generate_home, generate_ideas_json, parse_section
 
 
 def parse_iso(value):
@@ -66,6 +66,22 @@ class GeneratorTests(unittest.TestCase):
     def test_project_stage_survives_closed_state(self):
         closed = issue(state="closed", body=issue()["body"].replace("Exploring", "Project"))
         self.assertEqual(effective_stage(closed), "Project")
+
+
+class HomeGenerationTests(unittest.TestCase):
+    def test_home_avoids_dashboard_marketing_language(self):
+        parsed = [(parse_iso("2026-09-23T07:00:00Z"), issue())]
+        home = generate_home(parsed)
+        self.assertNotIn("Snapshot", home)
+        self.assertNotIn("## Overview", home)
+        self.assertNotIn("Capture now. Organize later.", home)
+        self.assertNotIn("Latest", home)
+        self.assertIn("Recent ideas", home)
+
+    def test_home_keeps_issue_as_canonical_link(self):
+        parsed = [(parse_iso("2026-09-23T07:00:00Z"), issue())]
+        home = generate_home(parsed)
+        self.assertIn("https://github.com/example/brain-dump/issues/7", home)
 
 
 if __name__ == "__main__":
