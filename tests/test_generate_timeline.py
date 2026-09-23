@@ -2,7 +2,7 @@ import json
 import unittest
 from datetime import datetime
 
-from scripts.generate_timeline import effective_stage, generate_home, generate_ideas_json, parse_section
+from scripts.generate_timeline import effective_stage, generate_home, generate_ideas_json, is_trusted_issue, parse_section
 
 
 def parse_iso(value):
@@ -66,6 +66,14 @@ class GeneratorTests(unittest.TestCase):
     def test_project_stage_survives_closed_state(self):
         closed = issue(state="closed", body=issue()["body"].replace("Exploring", "Project"))
         self.assertEqual(effective_stage(closed), "Project")
+
+    def test_trusted_issue_accepts_owner_and_collaborator_but_rejects_outsider(self):
+        owner_issue = issue(user={"login": "afnan"}, author_association="OWNER")
+        collaborator_issue = issue(user={"login": "agent-user"}, author_association="COLLABORATOR")
+        outsider_issue = issue(user={"login": "random-user"}, author_association="NONE")
+        self.assertTrue(is_trusted_issue(owner_issue, "afnan"))
+        self.assertTrue(is_trusted_issue(collaborator_issue, "afnan"))
+        self.assertFalse(is_trusted_issue(outsider_issue, "afnan"))
 
 
 class HomeGenerationTests(unittest.TestCase):
