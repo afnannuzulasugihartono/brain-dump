@@ -80,10 +80,10 @@ The existing Issue structure remains canonical:
 
 ```markdown
 ## Idea
-<original idea>
+Write the original human idea here.
 
 ## Why it might matter
-<context or motivation>
+Write the context or motivation here.
 
 ## Initial stage
 Inbox
@@ -99,7 +99,7 @@ AI-added material should use:
 
 ```markdown
 ## AI Notes
-<AI-added context, clarification, or research>
+Add AI-provided context, clarification, or research here.
 ```
 
 ## AI Write Policy
