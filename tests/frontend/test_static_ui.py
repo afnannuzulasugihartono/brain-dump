@@ -76,6 +76,16 @@ class StaticUITests(unittest.TestCase):
         non_ticker = "\n".join(path.read_text(encoding="utf-8").lower() for path in (ROOT / "docs" / "styles").glob("*.css") if path.name != "ticker.css")
         self.assertNotIn("@keyframes", non_ticker)
 
+    def test_ticker_markup_has_no_literal_backslash_n(self):
+        html = HTML.read_text(encoding="utf-8")
+        self.assertNotIn(r'</aside>\n  <template', html)
+
+    def test_app_wires_ticker_renderer(self):
+        app = (ROOT / "docs" / "js" / "app.js").read_text(encoding="utf-8")
+        self.assertIn('from "./ticker.js"', app)
+        self.assertIn("buildTickerItems", app)
+        self.assertIn("renderTicker", app)
+
     def test_ticker_contract(self):
         html = HTML.read_text(encoding="utf-8")
         ticker_path = ROOT / "docs" / "js" / "ticker.js"
