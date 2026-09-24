@@ -10,10 +10,10 @@ const $$=selector=>[...document.querySelectorAll(selector)];
 const unique=values=>[...new Set(values.filter(Boolean))].sort();
 const SIDEBAR_STORAGE_KEY="brainDumpSidebarCollapsed";
 const BOOT_SESSION_KEY="brainDumpBootSeen";
-const NOTES_TOOLBAR_HIDE_DELTA=28;
-const NOTES_TOOLBAR_SHOW_DELTA=16;
+const NOTES_FADE_START=24;
+const NOTES_FADE_DISTANCE=320;
 const WORKSPACE_TITLES={review:"Review",board:"Board",calendar:"Calendar"};
-let toolbarScroll={lastY:window.scrollY,direction:0,travel:0,startY:0};
+let notesScrollFrame=0;
 
 function greetingForHour(hour) {
   if (hour >= 5 && hour < 12) return {title:"Good morning",subtitle:"Ready to capture a thought?"};
@@ -74,79 +74,77 @@ function initBootIntro() {
   });
 }
 
-function measureNotesToolbarStart() {
-  const bar=$("#workspaceBar");
-  if (!bar) return;
-  toolbarScroll.startY=window.scrollY + bar.getBoundingClientRect().top;
+function notesLandingBaseHeight() {
+  return window.matchMedia?.("(max-width: 620px)").matches
+    ? 220
+    : Math.min(560, Math.max(360, window.innerHeight * 0.62));
 }
 
-function resetNotesToolbarScroll() {
-  toolbarScroll.lastY=window.scrollY;
-  toolbarScroll.direction=0;
-  toolbarScroll.travel=0;
-}
-
-function updateNotesToolbarVisibility() {
+function updateNotesScrollTransition() {
+  const main=$(".main");
   const bar=$("#workspaceBar");
-  if (!bar) return;
+  if (!main || !bar) return;
 
-  const currentY=window.scrollY;
-  const delta=currentY-toolbarScroll.lastY;
-  const direction=delta > 0 ? 1 : delta < 0 ? -1 : toolbarScroll.direction;
-  if (direction !== toolbarScroll.direction) {
-    toolbarScroll.direction=direction;
-    toolbarScroll.travel=0;
-  }
-  toolbarScroll.travel += Math.abs(delta);
-  toolbarScroll.lastY=currentY;
-
-  const interactionActive=bar.matches(":focus-within");
-  const beforeSticky=currentY < Math.max(80, toolbarScroll.startY - 16);
-  if (state.view !== "notes" || interactionActive || beforeSticky) {
-    bar.classList.remove("is-hidden");
-    toolbarScroll.travel=0;
+  if (state.view !== "notes") {
+    main.style.removeProperty("--notes-chrome-opacity");
+    main.style.removeProperty("--notes-landing-height");
+    main.style.removeProperty("--notes-toolbar-height");
+    main.style.removeProperty("--notes-hero-shift");
+    main.style.removeProperty("--notes-toolbar-shift");
+    main.style.removeProperty("--notes-toolbar-gap");
+    main.style.removeProperty("--notes-toolbar-padding");
     return;
   }
 
-  if (direction > 0 && toolbarScroll.travel >= NOTES_TOOLBAR_HIDE_DELTA) {
-    bar.classList.add("is-hidden");
-    toolbarScroll.travel=0;
-  } else if (direction < 0 && toolbarScroll.travel >= NOTES_TOOLBAR_SHOW_DELTA) {
-    bar.classList.remove("is-hidden");
-    toolbarScroll.travel=0;
-  }
+  const interactionActive=bar.matches(":focus-within");
+  const reduceMotion=window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const rawProgress=Math.max(0,Math.min(1,(window.scrollY-NOTES_FADE_START)/NOTES_FADE_DISTANCE));
+  const progress=interactionActive ? 0 : (reduceMotion && rawProgress > 0 ? 1 : rawProgress);
+  const visible=1-progress;
+  const landingHeight=notesLandingBaseHeight()*visible;
+  const toolbarHeight=Math.max(48,bar.scrollHeight)*visible;
+
+  main.style.setProperty("--notes-chrome-opacity",visible.toFixed(3));
+  main.style.setProperty("--notes-landing-height",`${landingHeight.toFixed(1)}px`);
+  main.style.setProperty("--notes-toolbar-height",`${toolbarHeight.toFixed(1)}px`);
+  main.style.setProperty("--notes-hero-shift",`${(-22*progress).toFixed(1)}px`);
+  main.style.setProperty("--notes-toolbar-shift",`${(-12*progress).toFixed(1)}px`);
+  main.style.setProperty("--notes-toolbar-gap",`${(14*visible).toFixed(1)}px`);
+  main.style.setProperty("--notes-toolbar-padding",`${(8*visible).toFixed(1)}px`);
+}
+
+function requestNotesScrollTransition() {
+  if (notesScrollFrame) return;
+  notesScrollFrame=requestAnimationFrame(() => {
+    notesScrollFrame=0;
+    updateNotesScrollTransition();
+  });
 }
 
 function syncWorkspaceChrome() {
   const main=$(".main");
-  const bar=$("#workspaceBar");
   const title=$("#workspaceTitle");
   const count=$("#workspaceCount");
   const workspace=state.view !== "notes";
 
   main?.classList.toggle("workspace-mode",workspace);
-  bar?.classList.remove("is-hidden");
 
   if (workspace) {
     title.textContent=WORKSPACE_TITLES[state.view] || "Workspace";
     count.textContent=`${state.filtered.length} idea${state.filtered.length === 1 ? "" : "s"}`;
   }
 
-  resetNotesToolbarScroll();
-  requestAnimationFrame(measureNotesToolbarStart);
+  requestNotesScrollTransition();
 }
 
 function initWorkspaceToolbar() {
   const bar=$("#workspaceBar");
   if (!bar) return;
-  resetNotesToolbarScroll();
-  requestAnimationFrame(measureNotesToolbarStart);
-  window.addEventListener("scroll",updateNotesToolbarVisibility,{passive:true});
-  window.addEventListener("resize",() => {
-    resetNotesToolbarScroll();
-    requestAnimationFrame(measureNotesToolbarStart);
-  });
-  bar.addEventListener("focusin",() => bar.classList.remove("is-hidden"));
+  window.addEventListener("scroll",requestNotesScrollTransition,{passive:true});
+  window.addEventListener("resize",requestNotesScrollTransition);
+  bar.addEventListener("focusin",requestNotesScrollTransition);
+  bar.addEventListener("focusout",requestNotesScrollTransition);
+  requestNotesScrollTransition();
 }
 
 function initShellUi() {
