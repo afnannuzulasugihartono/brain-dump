@@ -11,7 +11,7 @@ const unique=values=>[...new Set(values.filter(Boolean))].sort();
 const SIDEBAR_STORAGE_KEY="brainDumpSidebarCollapsed";
 const BOOT_SESSION_KEY="brainDumpBootSeen";
 const NOTES_FADE_START=24;
-const NOTES_FADE_DISTANCE=320;
+const NOTES_FADE_DISTANCE=160;
 const NOTES_PAGE_SIZE=5;
 const WORKSPACE_TITLES={review:"Review",board:"Board",calendar:"Calendar"};
 let notesScrollFrame=0;
@@ -75,23 +75,12 @@ function initBootIntro() {
   });
 }
 
-function notesLandingBaseHeight() {
-  return window.matchMedia?.("(max-width: 620px)").matches
-    ? 220
-    : Math.min(560, Math.max(360, window.innerHeight * 0.62));
-}
-
 function updateNotesScrollTransition() {
   const main=$(".main");
-  const bar=$("#workspaceBar");
-  if (!main || !bar) return;
+  if (!main) return;
 
   if (state.view !== "notes") {
     main.style.removeProperty("--notes-chrome-opacity");
-    main.style.removeProperty("--notes-landing-height");
-    main.style.removeProperty("--notes-toolbar-height");
-    main.style.removeProperty("--notes-toolbar-gap");
-    main.style.removeProperty("--notes-toolbar-padding");
     return;
   }
 
@@ -99,14 +88,8 @@ function updateNotesScrollTransition() {
   const rawProgress=Math.max(0,Math.min(1,(window.scrollY-NOTES_FADE_START)/NOTES_FADE_DISTANCE));
   const progress=reduceMotion && rawProgress > 0 ? 1 : rawProgress;
   const visible=1-progress;
-  const landingHeight=notesLandingBaseHeight()*visible;
-  const toolbarHeight=Math.max(48,bar.scrollHeight)*visible;
 
   main.style.setProperty("--notes-chrome-opacity",visible.toFixed(3));
-  main.style.setProperty("--notes-landing-height",`${landingHeight.toFixed(1)}px`);
-  main.style.setProperty("--notes-toolbar-height",`${toolbarHeight.toFixed(1)}px`);
-  main.style.setProperty("--notes-toolbar-gap",`${(14*visible).toFixed(1)}px`);
-  main.style.setProperty("--notes-toolbar-padding",`${(8*visible).toFixed(1)}px`);
 }
 
 function requestNotesScrollTransition() {
