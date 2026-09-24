@@ -12,7 +12,7 @@
       "idea": "Create a public-facing website focused on corruption monitoring in Indonesia, making corruption-related cases, actors, institutions, timelines, public records, and supporting sources easier to explore and understand.\n\nThe product direction is a visual, public-friendly corruption data observatory rather than a text-heavy case database. It should make complex public data understandable through moving counters, maps, timelines, charts, actor/case pages, and a continuously updated activity/news layer.",
       "aiNotes": "Captured from the user's brain dump request on 24 Sep 2026. Initial exploration considered an independent civic-tech database, a visualization layer over public records, and a source-linked corruption knowledge graph.\n\nProject framing was expanded after discussion: the core experience should be highly visual and understandable to the general public, including animated data counters, an Indonesia map, timelines, actors, self-updating public-source news, and aggregate figures derived only from known internet-accessible evidence.\n\nImportant interpretation rule: discovered/publicly recorded corruption is not equivalent to all corruption that exists. Every ranking, map, total, and headline metric must state exactly what it measures and its coverage.",
       "createdAt": "2026-09-24T03:19:51Z",
-      "updatedAt": "2026-09-24T04:32:01Z",
+      "updatedAt": "2026-09-24T04:51:49Z",
       "closedAt": null
     },
     {
