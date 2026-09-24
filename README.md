@@ -11,7 +11,7 @@ A small place for notes and ideas.
 
 _11 ideas · 10 open_
 
-### 24 Sep 2026 · [#18 Indonesia Corruption Watch website](https://github.com/afnannuzulasugihartono/brain-dump/issues/18)
+### 24 Sep 2026 · [#18 [Project] Indonesia 2.0 — Corruption & Integrity](https://github.com/afnannuzulasugihartono/brain-dump/issues/18)
 
 Information about corruption cases is often scattered across news reports, court records, government releases, and watchdog publications. A structured, searchable, source-linked website could make public-interest information easier to follow and compare over time.
 
