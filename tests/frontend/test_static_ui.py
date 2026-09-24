@@ -135,6 +135,11 @@ class StaticUITests(unittest.TestCase):
         self.assertIn('".theme-toggle"', app)
         self.assertIn('aria-current', app)
 
+    def test_theme_initialization_uses_all_theme_toggle_controls(self):
+        app = (ROOT / "docs" / "js" / "app.js").read_text(encoding="utf-8")
+        self.assertIn('$(".theme-toggle").forEach(initTheme);', app)
+        self.assertNotIn('$(".theme-toggle").forEach(initTheme);', app)
+
     def test_desktop_sidebar_supports_chatgpt_style_collapsed_rail(self):
         html = HTML.read_text(encoding="utf-8")
         css = all_css().replace(" ", "").replace("\n", "")
