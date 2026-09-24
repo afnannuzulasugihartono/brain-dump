@@ -8,7 +8,7 @@ A complete chronological feed generated from GitHub Issues.
 
 Information about corruption cases is often scattered across news reports, court records, government releases, and watchdog publications. A structured, searchable, source-linked website could make public-interest information easier to follow and compare over time.
 
-**Exploring** · Software · Open
+**Project** · Software · Open
 
 ### 24 Sep 2026 · [#17 Problem-mining and opportunity discovery system](https://github.com/afnannuzulasugihartono/brain-dump/issues/17)
 
