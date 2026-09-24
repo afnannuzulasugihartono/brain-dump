@@ -25,3 +25,11 @@ jobs:
           for f in docs/js/*.js; do node --check "$f"; done
       - name: Validate generated data
         run: python3 scripts/validate_generated.py
+      - name: Upload verification snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: compact-notes-final-snapshot
+          path: |
+            .
+            !.git
+          include-hidden-files: true
