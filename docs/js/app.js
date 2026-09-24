@@ -8,6 +8,74 @@ const state={ideas:[],filtered:[],insightsByIssue:new Map(),view:"notes",query:"
 const $=selector=>document.querySelector(selector);
 const $$=selector=>[...document.querySelectorAll(selector)];
 const unique=values=>[...new Set(values.filter(Boolean))].sort();
+const SIDEBAR_STORAGE_KEY="brainDumpSidebarCollapsed";
+const BOOT_SESSION_KEY="brainDumpBootSeen";
+
+function greetingForHour(hour) {
+  if (hour >= 5 && hour < 12) return {title:"Good morning",subtitle:"Ready to capture a thought?"};
+  if (hour >= 12 && hour < 17) return {title:"Good afternoon",subtitle:"What are you thinking about?"};
+  if (hour >= 17 && hour < 21) return {title:"Good evening",subtitle:"Anything worth saving before the day ends?"};
+  return {title:"Good night",subtitle:"A quiet place for late-night thoughts."};
+}
+
+function initGreeting() {
+  const greeting = greetingForHour(new Date().getHours());
+  $("#greetingTitle").textContent = greeting.title;
+  $("#greetingSubtitle").textContent = greeting.subtitle;
+}
+
+function initSidebar() {
+  const sidebar = $("#sidebar");
+  const collapseButton = $("#sidebarToggle");
+  const brandToggle = $("#sidebarBrandToggle");
+  if (!sidebar || !collapseButton || !brandToggle) return;
+
+  const readCollapsed = () => {
+    try { return localStorage.getItem(SIDEBAR_STORAGE_KEY) === "1"; }
+    catch { return false; }
+  };
+  const setCollapsed = collapsed => {
+    sidebar.classList.toggle("is-collapsed", collapsed);
+    collapseButton.setAttribute("aria-label", collapsed ? "Expand sidebar" : "Collapse sidebar");
+    collapseButton.title = collapsed ? "Expand sidebar" : "Collapse sidebar";
+    brandToggle.setAttribute("aria-label", collapsed ? "Expand sidebar" : "Collapse sidebar");
+    brandToggle.title = collapsed ? "Expand sidebar" : "Collapse sidebar";
+    try { localStorage.setItem(SIDEBAR_STORAGE_KEY, collapsed ? "1" : "0"); } catch {}
+  };
+
+  setCollapsed(readCollapsed());
+  collapseButton.onclick = () => setCollapsed(!sidebar.classList.contains("is-collapsed"));
+  brandToggle.onclick = () => setCollapsed(!sidebar.classList.contains("is-collapsed"));
+}
+
+function initBootIntro() {
+  const intro = $("#bootIntro");
+  if (!intro) return;
+  const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  let seen = false;
+  try { seen = sessionStorage.getItem(BOOT_SESSION_KEY) === "1"; } catch {}
+  if (reduceMotion || seen) {
+    intro.hidden = true;
+    return;
+  }
+  try { sessionStorage.setItem(BOOT_SESSION_KEY, "1"); } catch {}
+  intro.hidden = false;
+  intro.classList.add("is-active");
+  document.body.classList.add("boot-sequence");
+  intro.addEventListener("animationend", event => {
+    if (event.target !== intro || event.animationName !== "boot-dismiss") return;
+    intro.hidden = true;
+    intro.classList.remove("is-active");
+    document.body.classList.remove("boot-sequence");
+  });
+}
+
+function initShellUi() {
+  initGreeting();
+  initSidebar();
+  initBootIntro();
+}
+
 
 function fillSelect(selector, values) {
   const element = $(selector);
@@ -56,7 +124,8 @@ function setView(view) {
 }
 
 async function init() {
-  $$(".theme-toggle").forEach(initTheme);
+  initShellUi();
+  $(".theme-toggle").forEach(initTheme);
   try {
     const data = await loadBrainDumpData();
     state.ideas = data.ideas;
