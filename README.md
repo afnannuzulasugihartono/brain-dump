@@ -9,7 +9,13 @@ A small place for notes and ideas.
 <!-- TIMELINE:START -->
 ## Recent ideas
 
-_10 ideas · 9 open_
+_11 ideas · 10 open_
+
+### 24 Sep 2026 · [#18 Indonesia Corruption Watch website](https://github.com/afnannuzulasugihartono/brain-dump/issues/18)
+
+Information about corruption cases is often scattered across news reports, court records, government releases, and watchdog publications. A structured, searchable, source-linked website could make public-interest information easier to follow and compare over time.
+
+**Exploring** · Software · Open
 
 ### 24 Sep 2026 · [#17 Problem-mining and opportunity discovery system](https://github.com/afnannuzulasugihartono/brain-dump/issues/17)
 
@@ -53,13 +59,7 @@ History makes Brain Dump useful as a memory of how ideas developed, not just a l
 
 **Exploring** · Software · Open
 
-### 24 Sep 2026 · [#10 Pinned ideas in Brain Dump](https://github.com/afnannuzulasugihartono/brain-dump/issues/10)
-
-As Brain Dump grows, useful ideas can disappear in the chronological feed. Pinning gives the user a deliberate way to keep an idea in sight without relying on scoring or AI.
-
-**Exploring** · Software · Open
-
-[View all 10 ideas →](TIMELINE.md)
+[View all 11 ideas →](TIMELINE.md)
 <!-- TIMELINE:END -->
 
 ## Workflow

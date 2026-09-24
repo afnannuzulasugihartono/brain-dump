@@ -4,6 +4,12 @@ A complete chronological feed generated from GitHub Issues.
 
 ## All ideas
 
+### 24 Sep 2026 · [#18 Indonesia Corruption Watch website](https://github.com/afnannuzulasugihartono/brain-dump/issues/18)
+
+Information about corruption cases is often scattered across news reports, court records, government releases, and watchdog publications. A structured, searchable, source-linked website could make public-interest information easier to follow and compare over time.
+
+**Exploring** · Software · Open
+
 ### 24 Sep 2026 · [#17 Problem-mining and opportunity discovery system](https://github.com/afnannuzulasugihartono/brain-dump/issues/17)
 
 Idea generation is often biased toward interesting solutions rather than recurring problems with real economic value. A disciplined problem-mining pipeline can improve the quality of what gets explored.

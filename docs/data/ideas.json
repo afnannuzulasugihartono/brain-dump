@@ -2,6 +2,20 @@
   "source": "GitHub Issues",
   "ideas": [
     {
+      "number": 18,
+      "title": "Indonesia Corruption Watch website",
+      "url": "https://github.com/afnannuzulasugihartono/brain-dump/issues/18",
+      "state": "open",
+      "stage": "Exploring",
+      "category": "Software",
+      "why": "Information about corruption cases is often scattered across news reports, court records, government releases, and watchdog publications. A structured, searchable, source-linked website could make public-interest information easier to follow and compare over time.",
+      "idea": "Create a public-facing website focused on corruption monitoring in Indonesia, making corruption-related cases, actors, institutions, timelines, public records, and supporting sources easier to explore and understand.",
+      "aiNotes": "Captured from the user's brain dump request on 24 Sep 2026. Kept intentionally broad so later research can determine whether the product should be an independent civic-tech database, a visualization layer over public records, or a concept related to the existing ICW organization.",
+      "createdAt": "2026-09-24T03:19:51Z",
+      "updatedAt": "2026-09-24T03:19:51Z",
+      "closedAt": null
+    },
+    {
       "number": 17,
       "title": "Problem-mining and opportunity discovery system",
       "url": "https://github.com/afnannuzulasugihartono/brain-dump/issues/17",
