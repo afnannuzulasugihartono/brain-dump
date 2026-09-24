@@ -166,7 +166,7 @@ class StaticUITests(unittest.TestCase):
         css = all_css().replace(" ", "").replace("\n", "")
         app = (ROOT / "docs" / "js" / "app.js").read_text(encoding="utf-8")
         self.assertIn('.workspace-bar{position:sticky;', css)
-        self.assertIn('.workspace-bar.is-hidden{transform:translatey(-110%)', css)
+        self.assertIn('.workspace-bar.is-hidden{transform:translateY(-110%)', css)
         self.assertIn('NOTES_TOOLBAR_HIDE_DELTA', app)
         self.assertIn('NOTES_TOOLBAR_SHOW_DELTA', app)
         self.assertIn('matches(":focus-within")', app)
