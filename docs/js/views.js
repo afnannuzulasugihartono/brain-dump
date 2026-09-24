@@ -32,14 +32,15 @@ export function ideaCard(idea, {compact=false}={}) {
   </article>`;
 }
 
-export function renderNotes(root, ideas, emptyTemplate) {
+export function renderNotes(root, ideas, emptyTemplate, visibleCount=5) {
   if (!ideas.length) {
     root.replaceChildren(emptyTemplate.content.cloneNode(true));
     return;
   }
   let currentMonth = "";
   let html = '<div class="notes">';
-  ideas.forEach(idea => {
+  const visibleIdeas = ideas.slice(0, visibleCount);
+  visibleIdeas.forEach(idea => {
     const parts = dateParts(idea.createdAt);
     const body = noteBody(idea);
     if (parts.month !== currentMonth) {
@@ -50,7 +51,6 @@ export function renderNotes(root, ideas, emptyTemplate) {
       <div class="note-time">${parts.day} ${parts.mon} · ${parts.year}</div>
       <a class="note-title" href="${esc(idea.url)}">${esc(idea.title)}</a>
       ${body ? `<p class="note-copy">${esc(body)}</p>` : ""}
-      ${idea.why && idea.why.trim() !== body ? `<p class="note-context">${esc(idea.why)}</p>` : ""}
       <div class="note-meta">
         <span>${tag(idea.stage)}</span>
         <span>${tag(idea.category)}</span>
@@ -59,7 +59,11 @@ export function renderNotes(root, ideas, emptyTemplate) {
       </div>
     </article>`;
   });
-  root.innerHTML = html + "</div>";
+  html += "</div>";
+  if (visibleIdeas.length < ideas.length) {
+    html += '<button class="show-more-notes" data-action="show-more-notes" type="button">Show more</button>';
+  }
+  root.innerHTML = html;
 }
 
 export function renderBoard(root, ideas) {
