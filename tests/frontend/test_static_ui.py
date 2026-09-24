@@ -140,10 +140,43 @@ class StaticUITests(unittest.TestCase):
         self.assertRegex(app, r'\$\$\("\.theme-toggle"\)\.forEach\(initTheme\);')
         self.assertNotRegex(app, r'(?<!\$)\$\("\.theme-toggle"\)\.forEach\(initTheme\);')
 
+    def test_view_switching_uses_all_view_sections(self):
+        app = (ROOT / "docs" / "js" / "app.js").read_text(encoding="utf-8")
+        self.assertRegex(app, r'\$\$\("\.view"\)\.forEach\(section => section\.classList\.remove\("active"\)\);')
+        self.assertNotRegex(app, r'(?<!\$)\$\("\.view"\)\.forEach')
+
     def test_entry_script_url_is_cache_busted(self):
         html = HTML.read_text(encoding="utf-8")
         self.assertRegex(html, r'<script type="module" src="\./js/app\.js\?v=[^"]+"></script>')
         self.assertNotIn('<script type="module" src="./js/app.js"></script>', html)
+
+
+    def test_non_notes_views_use_full_workspace_header(self):
+        html = HTML.read_text(encoding="utf-8")
+        css = all_css().replace(" ", "").replace("\n", "")
+        app = (ROOT / "docs" / "js" / "app.js").read_text(encoding="utf-8")
+        self.assertIn('id="workspaceBar"', html)
+        self.assertIn('id="workspaceHeading"', html)
+        self.assertIn('id="workspaceTitle"', html)
+        self.assertIn('id="workspaceCount"', html)
+        self.assertLess(html.index('id="greeting"'), html.index('id="workspaceBar"'))
+        self.assertIn('.main.workspace-mode{width:calc(100%-40px);max-width:none;', css)
+        self.assertIn('.workspace-mode.landing-intro{display:none', css)
+        self.assertIn('.workspace-mode.workspace-heading{display:flex', css)
+        self.assertIn('"workspace-mode"', app)
+        self.assertIn('workspaceTitle', app)
+        self.assertIn('workspaceCount', app)
+
+    def test_notes_toolbar_auto_hides_on_scroll_and_stays_visible_during_interaction(self):
+        css = all_css().replace(" ", "").replace("\n", "")
+        app = (ROOT / "docs" / "js" / "app.js").read_text(encoding="utf-8")
+        self.assertIn('.workspace-bar{position:sticky;', css)
+        self.assertIn('.workspace-bar.is-hidden{transform:translateY(-110%)', css)
+        self.assertIn('NOTES_TOOLBAR_HIDE_DELTA', app)
+        self.assertIn('NOTES_TOOLBAR_SHOW_DELTA', app)
+        self.assertIn('matches(":focus-within")', app)
+        self.assertIn('addEventListener("scroll"', app)
+        self.assertIn('state.view !== "notes"', app)
 
     def test_desktop_sidebar_supports_chatgpt_style_collapsed_rail(self):
         html = HTML.read_text(encoding="utf-8")
