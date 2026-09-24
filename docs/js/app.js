@@ -1,10 +1,10 @@
 import {loadBrainDumpData} from "./data.js";
-import {renderNotes, renderBoard, renderCalendar, esc} from "./views.js";
+import {renderNotes, renderBoard, renderCalendar, esc} from "./views.js?v=20260924-compactnotes1";
 import {renderReview} from "./review.js";
 import {initTheme} from "./theme.js";
 import {buildTickerItems, renderTicker} from "./ticker.js";
 
-const state={ideas:[],filtered:[],insightsByIssue:new Map(),view:"notes",query:"",category:"all",stage:"all",calendarDate:new Date()};
+const state={ideas:[],filtered:[],insightsByIssue:new Map(),view:"notes",query:"",category:"all",stage:"all",calendarDate:new Date(),notesVisible:5};
 const $=selector=>document.querySelector(selector);
 const $$=selector=>[...document.querySelectorAll(selector)];
 const unique=values=>[...new Set(values.filter(Boolean))].sort();
@@ -12,6 +12,7 @@ const SIDEBAR_STORAGE_KEY="brainDumpSidebarCollapsed";
 const BOOT_SESSION_KEY="brainDumpBootSeen";
 const NOTES_FADE_START=24;
 const NOTES_FADE_DISTANCE=320;
+const NOTES_PAGE_SIZE=5;
 const WORKSPACE_TITLES={review:"Review",board:"Board",calendar:"Calendar"};
 let notesScrollFrame=0;
 
@@ -89,17 +90,14 @@ function updateNotesScrollTransition() {
     main.style.removeProperty("--notes-chrome-opacity");
     main.style.removeProperty("--notes-landing-height");
     main.style.removeProperty("--notes-toolbar-height");
-    main.style.removeProperty("--notes-hero-shift");
-    main.style.removeProperty("--notes-toolbar-shift");
     main.style.removeProperty("--notes-toolbar-gap");
     main.style.removeProperty("--notes-toolbar-padding");
     return;
   }
 
-  const interactionActive=bar.matches(":focus-within");
   const reduceMotion=window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
   const rawProgress=Math.max(0,Math.min(1,(window.scrollY-NOTES_FADE_START)/NOTES_FADE_DISTANCE));
-  const progress=interactionActive ? 0 : (reduceMotion && rawProgress > 0 ? 1 : rawProgress);
+  const progress=reduceMotion && rawProgress > 0 ? 1 : rawProgress;
   const visible=1-progress;
   const landingHeight=notesLandingBaseHeight()*visible;
   const toolbarHeight=Math.max(48,bar.scrollHeight)*visible;
@@ -107,8 +105,6 @@ function updateNotesScrollTransition() {
   main.style.setProperty("--notes-chrome-opacity",visible.toFixed(3));
   main.style.setProperty("--notes-landing-height",`${landingHeight.toFixed(1)}px`);
   main.style.setProperty("--notes-toolbar-height",`${toolbarHeight.toFixed(1)}px`);
-  main.style.setProperty("--notes-hero-shift",`${(-22*progress).toFixed(1)}px`);
-  main.style.setProperty("--notes-toolbar-shift",`${(-12*progress).toFixed(1)}px`);
   main.style.setProperty("--notes-toolbar-gap",`${(14*visible).toFixed(1)}px`);
   main.style.setProperty("--notes-toolbar-padding",`${(8*visible).toFixed(1)}px`);
 }
@@ -142,8 +138,6 @@ function initWorkspaceToolbar() {
   if (!bar) return;
   window.addEventListener("scroll",requestNotesScrollTransition,{passive:true});
   window.addEventListener("resize",requestNotesScrollTransition);
-  bar.addEventListener("focusin",requestNotesScrollTransition);
-  bar.addEventListener("focusout",requestNotesScrollTransition);
   requestNotesScrollTransition();
 }
 
@@ -166,7 +160,12 @@ function fillSelect(selector, values) {
 }
 
 function renderActive() {
-  if (state.view === "notes") renderNotes($("#notesView"), state.filtered, $("#emptyTemplate"));
+  if (state.view === "notes") {
+    const root=$("#notesView");
+    renderNotes(root, state.filtered, $("#emptyTemplate"), state.notesVisible);
+    const showMore=root.querySelector('[data-action="show-more-notes"]');
+    if (showMore) showMore.onclick=() => {state.notesVisible+=NOTES_PAGE_SIZE;renderActive();};
+  }
   else if (state.view === "review") renderReview($("#reviewView"), state.filtered, state.insightsByIssue);
   else if (state.view === "board") renderBoard($("#boardView"), state.filtered);
   else renderCalendar($("#calendarView"), state.filtered, state.calendarDate, next => {state.calendarDate=next;renderActive();});
@@ -184,6 +183,7 @@ function applyFilters() {
   if (state.stage !== "all") active.push(esc(state.stage));
   $("#activeFilters").hidden = !active.length;
   $("#activeFilters").innerHTML = active.length ? `${state.filtered.length} result${state.filtered.length===1?"":"s"} · ${active.join(" · ")}` : "";
+  state.notesVisible=NOTES_PAGE_SIZE;
   syncWorkspaceChrome();
   renderActive();
 }
