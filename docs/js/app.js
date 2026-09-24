@@ -198,7 +198,7 @@ function setView(view) {
     if (active) control.setAttribute("aria-current", "page");
     else control.removeAttribute("aria-current");
   });
-  $(".view").forEach(section => section.classList.remove("active"));
+  $$(".view").forEach(section => section.classList.remove("active"));
   $("#" + view + "View").classList.add("active");
   syncWorkspaceChrome();
   renderActive();
