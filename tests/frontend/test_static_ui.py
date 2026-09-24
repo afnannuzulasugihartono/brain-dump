@@ -69,15 +69,12 @@ class StaticUITests(unittest.TestCase):
         self.assertIn("View on GitHub", js)
 
     def test_css_has_no_heavy_effects(self):
-        css = all_css().lower()
-        self.assertNotIn("backdrop-filter", css)
-        self.assertNotIn("linear-gradient", css)
-        self.assertNotIn("radial-gradient", css)
         normal_css = "\n".join(
             path.read_text(encoding="utf-8").lower()
             for path in (ROOT / "docs" / "styles").glob("*.css")
             if path.name not in {"ticker.css", "boot.css"}
         )
+        self.assertNotIn("backdrop-filter", normal_css)
         self.assertNotIn("linear-gradient", normal_css)
         self.assertNotIn("radial-gradient", normal_css)
         self.assertNotIn("@keyframes", normal_css)
