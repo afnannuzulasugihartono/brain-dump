@@ -173,30 +173,48 @@ class StaticUITests(unittest.TestCase):
         self.assertIn('workspaceTitle', app)
         self.assertIn('workspaceCount', app)
 
-    def test_notes_chrome_fades_and_collapses_with_scroll_progress(self):
+    def test_notes_chrome_fades_without_extra_vertical_motion(self):
         css = all_css().replace(" ", "").replace("\n", "")
         app = (ROOT / "docs" / "js" / "app.js").read_text(encoding="utf-8")
         self.assertIn('NOTES_FADE_START', app)
         self.assertIn('NOTES_FADE_DISTANCE', app)
         self.assertIn('updateNotesScrollTransition', app)
-        self.assertIn('matches(":focus-within")', app)
         self.assertIn('setProperty("--notes-chrome-opacity"', app)
         self.assertIn('setProperty("--notes-landing-height"', app)
         self.assertIn('setProperty("--notes-toolbar-height"', app)
         self.assertIn('addEventListener("scroll"', app)
         self.assertIn('state.view !== "notes"', app)
+        self.assertNotIn('matches(":focus-within")', app)
+        self.assertNotIn('--notes-hero-shift', app)
+        self.assertNotIn('--notes-toolbar-shift', app)
         self.assertIn('.main:not(.workspace-mode).landing-intro{min-height:0;', css)
         self.assertIn('opacity:var(--notes-chrome-opacity,1)', css)
         self.assertIn('height:var(--notes-landing-height', css)
         self.assertIn('.main:not(.workspace-mode).workspace-bar{position:relative;', css)
         self.assertIn('max-height:var(--notes-toolbar-height', css)
-        self.assertNotIn('NOTES_TOOLBAR_HIDE_DELTA', app)
-        self.assertNotIn('NOTES_TOOLBAR_SHOW_DELTA', app)
+        self.assertNotIn('translatey(var(--notes-hero-shift', css.lower())
+        self.assertNotIn('translatey(var(--notes-toolbar-shift', css.lower())
+
+    def test_notes_are_compact_and_progressively_disclosed(self):
+        css = all_css().replace(" ", "").replace("\n", "")
+        app = (ROOT / "docs" / "js" / "app.js").read_text(encoding="utf-8")
+        views = (ROOT / "docs" / "js" / "views.js").read_text(encoding="utf-8")
+        self.assertIn('NOTES_PAGE_SIZE=5', app.replace(" ", ""))
+        self.assertIn('notesVisible:5', app.replace(" ", ""))
+        self.assertIn('state.notesVisible+=NOTES_PAGE_SIZE', app.replace(" ", ""))
+        self.assertIn('state.notesVisible=NOTES_PAGE_SIZE', app.replace(" ", ""))
+        self.assertIn('visibleCount=5', views.replace(" ", ""))
+        self.assertIn('ideas.slice(0,visibleCount)', views.replace(" ", ""))
+        self.assertIn('data-action="show-more-notes"', views)
+        self.assertIn('Show more', views)
+        self.assertNotIn('note-context', views)
+        self.assertIn('-webkit-line-clamp:2', css)
+        self.assertIn('.note{padding:10px0', css)
+        self.assertIn('.show-more-notes{', css)
 
     def test_notes_scroll_fade_respects_reduced_motion(self):
         css = all_css().replace(" ", "").replace("\n", "")
         self.assertIn('@media(prefers-reduced-motion:reduce)', css)
-        self.assertIn('.main:not(.workspace-mode).landing-intro{transform:none', css)
 
     def test_desktop_sidebar_supports_chatgpt_style_collapsed_rail(self):
         html = HTML.read_text(encoding="utf-8")
