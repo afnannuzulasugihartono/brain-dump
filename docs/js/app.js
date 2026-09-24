@@ -10,6 +10,10 @@ const $$=selector=>[...document.querySelectorAll(selector)];
 const unique=values=>[...new Set(values.filter(Boolean))].sort();
 const SIDEBAR_STORAGE_KEY="brainDumpSidebarCollapsed";
 const BOOT_SESSION_KEY="brainDumpBootSeen";
+const NOTES_TOOLBAR_HIDE_DELTA=28;
+const NOTES_TOOLBAR_SHOW_DELTA=16;
+const WORKSPACE_TITLES={review:"Review",board:"Board",calendar:"Calendar"};
+let toolbarScroll={lastY:window.scrollY,direction:0,travel:0,startY:0};
 
 function greetingForHour(hour) {
   if (hour >= 5 && hour < 12) return {title:"Good morning",subtitle:"Ready to capture a thought?"};
@@ -70,10 +74,86 @@ function initBootIntro() {
   });
 }
 
+function measureNotesToolbarStart() {
+  const bar=$("#workspaceBar");
+  if (!bar) return;
+  toolbarScroll.startY=window.scrollY + bar.getBoundingClientRect().top;
+}
+
+function resetNotesToolbarScroll() {
+  toolbarScroll.lastY=window.scrollY;
+  toolbarScroll.direction=0;
+  toolbarScroll.travel=0;
+}
+
+function updateNotesToolbarVisibility() {
+  const bar=$("#workspaceBar");
+  if (!bar) return;
+
+  const currentY=window.scrollY;
+  const delta=currentY-toolbarScroll.lastY;
+  const direction=delta > 0 ? 1 : delta < 0 ? -1 : toolbarScroll.direction;
+  if (direction !== toolbarScroll.direction) {
+    toolbarScroll.direction=direction;
+    toolbarScroll.travel=0;
+  }
+  toolbarScroll.travel += Math.abs(delta);
+  toolbarScroll.lastY=currentY;
+
+  const interactionActive=bar.matches(":focus-within");
+  const beforeSticky=currentY < Math.max(80, toolbarScroll.startY - 16);
+  if (state.view !== "notes" || interactionActive || beforeSticky) {
+    bar.classList.remove("is-hidden");
+    toolbarScroll.travel=0;
+    return;
+  }
+
+  if (direction > 0 && toolbarScroll.travel >= NOTES_TOOLBAR_HIDE_DELTA) {
+    bar.classList.add("is-hidden");
+    toolbarScroll.travel=0;
+  } else if (direction < 0 && toolbarScroll.travel >= NOTES_TOOLBAR_SHOW_DELTA) {
+    bar.classList.remove("is-hidden");
+    toolbarScroll.travel=0;
+  }
+}
+
+function syncWorkspaceChrome() {
+  const main=$(".main");
+  const bar=$("#workspaceBar");
+  const title=$("#workspaceTitle");
+  const count=$("#workspaceCount");
+  const workspace=state.view !== "notes";
+
+  main?.classList.toggle("workspace-mode",workspace);
+  bar?.classList.remove("is-hidden");
+
+  if (workspace) {
+    title.textContent=WORKSPACE_TITLES[state.view] || "Workspace";
+    count.textContent=`${state.filtered.length} idea${state.filtered.length === 1 ? "" : "s"}`;
+  }
+
+  resetNotesToolbarScroll();
+  requestAnimationFrame(measureNotesToolbarStart);
+}
+
+function initWorkspaceToolbar() {
+  const bar=$("#workspaceBar");
+  if (!bar) return;
+  resetNotesToolbarScroll();
+  requestAnimationFrame(measureNotesToolbarStart);
+  window.addEventListener("scroll",updateNotesToolbarVisibility,{passive:true});
+  window.addEventListener("resize",() => {
+    resetNotesToolbarScroll();
+    requestAnimationFrame(measureNotesToolbarStart);
+  });
+  bar.addEventListener("focusin",() => bar.classList.remove("is-hidden"));
+}
+
 function initShellUi() {
   initGreeting();
   initSidebar();
   initBootIntro();
+  initWorkspaceToolbar();
 }
 
 
@@ -106,6 +186,7 @@ function applyFilters() {
   if (state.stage !== "all") active.push(esc(state.stage));
   $("#activeFilters").hidden = !active.length;
   $("#activeFilters").innerHTML = active.length ? `${state.filtered.length} result${state.filtered.length===1?"":"s"} · ${active.join(" · ")}` : "";
+  syncWorkspaceChrome();
   renderActive();
 }
 
@@ -119,6 +200,7 @@ function setView(view) {
   });
   $$(".view").forEach(section => section.classList.remove("active"));
   $("#" + view + "View").classList.add("active");
+  syncWorkspaceChrome();
   renderActive();
   history.replaceState(null,"","#"+view);
 }
