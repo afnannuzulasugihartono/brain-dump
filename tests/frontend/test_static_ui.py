@@ -73,8 +73,14 @@ class StaticUITests(unittest.TestCase):
         self.assertNotIn("backdrop-filter", css)
         self.assertNotIn("linear-gradient", css)
         self.assertNotIn("radial-gradient", css)
-        non_ticker = "\n".join(path.read_text(encoding="utf-8").lower() for path in (ROOT / "docs" / "styles").glob("*.css") if path.name != "ticker.css")
-        self.assertNotIn("@keyframes", non_ticker)
+        normal_css = "\n".join(
+            path.read_text(encoding="utf-8").lower()
+            for path in (ROOT / "docs" / "styles").glob("*.css")
+            if path.name not in {"ticker.css", "boot.css"}
+        )
+        self.assertNotIn("linear-gradient", normal_css)
+        self.assertNotIn("radial-gradient", normal_css)
+        self.assertNotIn("@keyframes", normal_css)
 
     def test_ticker_markup_has_no_literal_backslash_n(self):
         html = HTML.read_text(encoding="utf-8")
@@ -127,10 +133,62 @@ class StaticUITests(unittest.TestCase):
     def test_app_wires_sidebar_and_mobile_view_controls(self):
         app = (ROOT / "docs" / "js" / "app.js").read_text(encoding="utf-8")
         compact = app.replace(" ", "").replace("\n", "")
-        self.assertIn('$$('.replace(" ", ""), compact)
+        self.assertIn('$('.replace(" ", ""), compact)
         self.assertIn('".view-link"', app)
         self.assertIn('".theme-toggle"', app)
         self.assertIn('aria-current', app)
+
+    def test_desktop_sidebar_supports_chatgpt_style_collapsed_rail(self):
+        html = HTML.read_text(encoding="utf-8")
+        css = all_css().replace(" ", "").replace("\n", "")
+        app = (ROOT / "docs" / "js" / "app.js").read_text(encoding="utf-8")
+        self.assertIn('id="sidebar"', html)
+        self.assertIn('class="sidebar-brand-slot"', html)
+        self.assertIn('class="sidebar-brand-mark"', html)
+        self.assertIn('class="sidebar-brand-toggle"', html)
+        self.assertIn('id="sidebarToggle"', html)
+        self.assertIn('data-tooltip="Review"', html)
+        self.assertIn('data-tooltip="Calendar"', html)
+        self.assertIn('.sidebar.is-collapsed{width:58px', css)
+        self.assertIn('.sidebar-brand-slot:hover.sidebar-brand-toggle', css)
+        self.assertIn("brainDumpSidebarCollapsed", app)
+        self.assertIn("localStorage", app)
+
+    def test_landing_greeting_is_centered_before_composer_and_time_aware(self):
+        html = HTML.read_text(encoding="utf-8")
+        css = all_css().replace(" ", "").replace("\n", "")
+        app = (ROOT / "docs" / "js" / "app.js").read_text(encoding="utf-8")
+        self.assertIn('id="greeting"', html)
+        self.assertIn('id="greetingTitle"', html)
+        self.assertIn('id="greetingSubtitle"', html)
+        self.assertLess(html.index('id="greeting"'), html.index('class="composer"'))
+        self.assertIn('.landing-intro{text-align:center;', css)
+        self.assertIn('min-height:clamp(190px,34vh,360px)', css)
+        self.assertIn("greetingForHour", app)
+        for greeting in ("Good morning", "Good afternoon", "Good evening", "Good night"):
+            self.assertIn(greeting, app)
+
+    def test_futuristic_boot_intro_runs_once_per_session_and_respects_reduced_motion(self):
+        html = HTML.read_text(encoding="utf-8")
+        app = (ROOT / "docs" / "js" / "app.js").read_text(encoding="utf-8")
+        boot_path = ROOT / "docs" / "styles" / "boot.css"
+        self.assertIn('./styles/boot.css', html)
+        self.assertIn('id="bootIntro"', html)
+        self.assertIn("brainDumpBootSeen", app)
+        self.assertIn("sessionStorage", app)
+        self.assertTrue(boot_path.exists())
+        if boot_path.exists():
+            boot = boot_path.read_text(encoding="utf-8")
+            self.assertIn("@keyframes boot-flicker", boot)
+            self.assertIn("@keyframes ui-power-on", boot)
+            self.assertIn("prefers-reduced-motion", boot)
+
+    def test_sidebar_review_and_calendar_use_professional_svg_icons(self):
+        html = HTML.read_text(encoding="utf-8")
+        self.assertIn('data-icon="review"', html)
+        self.assertIn('data-icon="calendar"', html)
+        self.assertGreaterEqual(html.count('class="nav-icon"'), 6)
+        self.assertGreaterEqual(html.count("<svg"), 6)
 
 
 if __name__ == "__main__":
