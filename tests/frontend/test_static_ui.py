@@ -148,6 +148,7 @@ class StaticUITests(unittest.TestCase):
         self.assertIn('data-tooltip="Calendar"', html)
         self.assertIn('.sidebar.is-collapsed{width:58px', css)
         self.assertIn('.sidebar-brand-slot:hover.sidebar-brand-toggle', css)
+        self.assertIn('.sidebar.is-collapsed.sidebar-brand-slot:focus-within.sidebar-brand-toggle', css)
         self.assertIn("brainDumpSidebarCollapsed", app)
         self.assertIn("localStorage", app)
 
