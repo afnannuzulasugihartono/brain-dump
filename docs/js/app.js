@@ -125,7 +125,7 @@ function setView(view) {
 
 async function init() {
   initShellUi();
-  $(".theme-toggle").forEach(initTheme);
+  $$(".theme-toggle").forEach(initTheme);
   try {
     const data = await loadBrainDumpData();
     state.ideas = data.ideas;
