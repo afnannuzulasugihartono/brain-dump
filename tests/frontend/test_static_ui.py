@@ -207,6 +207,7 @@ class StaticUITests(unittest.TestCase):
         self.assertIn('ideas.slice(0,visibleCount)', views.replace(" ", ""))
         self.assertIn('data-action="show-more-notes"', views)
         self.assertIn('Show more', views)
+        self.assertRegex(app, r'from "\./views\.js\?v=[^"]+";')
         self.assertNotIn('note-context', views)
         self.assertIn('-webkit-line-clamp:2', css)
         self.assertIn('.note{padding:10px0', css)
