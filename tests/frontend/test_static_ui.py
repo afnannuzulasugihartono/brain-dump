@@ -140,6 +140,11 @@ class StaticUITests(unittest.TestCase):
         self.assertRegex(app, r'\$\$\("\.theme-toggle"\)\.forEach\(initTheme\);')
         self.assertNotRegex(app, r'(?<!\$)\$\("\.theme-toggle"\)\.forEach\(initTheme\);')
 
+    def test_view_switching_uses_all_view_sections(self):
+        app = (ROOT / "docs" / "js" / "app.js").read_text(encoding="utf-8")
+        self.assertRegex(app, r'\$\$\("\.view"\)\.forEach\(section => section\.classList\.remove\("active"\)\);')
+        self.assertNotRegex(app, r'(?<!\$)\$\("\.view"\)\.forEach')
+
     def test_entry_script_url_is_cache_busted(self):
         html = HTML.read_text(encoding="utf-8")
         self.assertRegex(html, r'<script type="module" src="\./js/app\.js\?v=[^"]+"></script>')
