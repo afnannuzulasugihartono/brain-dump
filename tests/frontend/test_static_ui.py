@@ -173,16 +173,30 @@ class StaticUITests(unittest.TestCase):
         self.assertIn('workspaceTitle', app)
         self.assertIn('workspaceCount', app)
 
-    def test_notes_toolbar_auto_hides_on_scroll_and_stays_visible_during_interaction(self):
+    def test_notes_chrome_fades_and_collapses_with_scroll_progress(self):
         css = all_css().replace(" ", "").replace("\n", "")
         app = (ROOT / "docs" / "js" / "app.js").read_text(encoding="utf-8")
-        self.assertIn('.workspace-bar{position:sticky;', css)
-        self.assertIn('.workspace-bar.is-hidden{transform:translateY(-110%)', css)
-        self.assertIn('NOTES_TOOLBAR_HIDE_DELTA', app)
-        self.assertIn('NOTES_TOOLBAR_SHOW_DELTA', app)
+        self.assertIn('NOTES_FADE_START', app)
+        self.assertIn('NOTES_FADE_DISTANCE', app)
+        self.assertIn('updateNotesScrollTransition', app)
         self.assertIn('matches(":focus-within")', app)
+        self.assertIn('setProperty("--notes-chrome-opacity"', app)
+        self.assertIn('setProperty("--notes-landing-height"', app)
+        self.assertIn('setProperty("--notes-toolbar-height"', app)
         self.assertIn('addEventListener("scroll"', app)
         self.assertIn('state.view !== "notes"', app)
+        self.assertIn('.main:not(.workspace-mode).landing-intro{min-height:0;', css)
+        self.assertIn('opacity:var(--notes-chrome-opacity,1)', css)
+        self.assertIn('height:var(--notes-landing-height', css)
+        self.assertIn('.main:not(.workspace-mode).workspace-bar{position:relative;', css)
+        self.assertIn('max-height:var(--notes-toolbar-height', css)
+        self.assertNotIn('NOTES_TOOLBAR_HIDE_DELTA', app)
+        self.assertNotIn('NOTES_TOOLBAR_SHOW_DELTA', app)
+
+    def test_notes_scroll_fade_respects_reduced_motion(self):
+        css = all_css().replace(" ", "").replace("\n", "")
+        self.assertIn('@media(prefers-reduced-motion:reduce)', css)
+        self.assertIn('.main:not(.workspace-mode).landing-intro{transform:none', css)
 
     def test_desktop_sidebar_supports_chatgpt_style_collapsed_rail(self):
         html = HTML.read_text(encoding="utf-8")
