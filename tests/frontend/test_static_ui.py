@@ -173,6 +173,31 @@ class StaticUITests(unittest.TestCase):
         self.assertIn('workspaceTitle', app)
         self.assertIn('workspaceCount', app)
 
+
+    def test_notes_chrome_is_sticky_and_notes_scroll_behind_it(self):
+        html = HTML.read_text(encoding="utf-8")
+        css = all_css().replace(" ", "").replace("\n", "")
+        app = (ROOT / "docs" / "js" / "app.js").read_text(encoding="utf-8")
+        self.assertIn('id="notesChrome"', html)
+        self.assertLess(html.index('id="notesChrome"'), html.index('id="notesView"'))
+        chrome_start = html.index('id="notesChrome"')
+        chrome_end = html.index('</div>', html.index('id="workspaceBar"')) + len('</div>')
+        chrome = html[chrome_start:chrome_end]
+        self.assertIn('id="greeting"', chrome)
+        self.assertIn('id="workspaceBar"', chrome)
+        self.assertIn('.main:not(.workspace-mode).notes-chrome{position:sticky;top:0;z-index:11;', css)
+        self.assertIn('opacity:var(--notes-chrome-opacity,1)', css)
+        self.assertIn('background:var(--bg)', css)
+        self.assertIn('.notes-chrome.is-transparent{pointer-events:none', css)
+        self.assertIn('classList.toggle("is-transparent"', app)
+        self.assertNotIn('.main:not(.workspace-mode).landing-intro{opacity:var(--notes-chrome-opacity,1)', css)
+        self.assertNotIn('.main:not(.workspace-mode).workspace-bar{position:relative;top:auto;opacity:var(--notes-chrome-opacity,1)', css)
+
+    def test_mobile_notes_chrome_sticks_below_mobile_topbar(self):
+        css = all_css().replace(" ", "").replace("\n", "")
+        self.assertIn('@media(max-width:620px)', css)
+        self.assertIn('.main:not(.workspace-mode).notes-chrome{top:54px', css)
+
     def test_notes_chrome_fades_without_layout_feedback_or_extra_motion(self):
         css = all_css().replace(" ", "").replace("\n", "")
         app = (ROOT / "docs" / "js" / "app.js").read_text(encoding="utf-8")
