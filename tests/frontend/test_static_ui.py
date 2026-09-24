@@ -160,7 +160,7 @@ class StaticUITests(unittest.TestCase):
         self.assertIn('id="greetingSubtitle"', html)
         self.assertLess(html.index('id="greeting"'), html.index('class="composer"'))
         self.assertIn('.landing-intro{text-align:center;', css)
-        self.assertIn('min-height:clamp(190px,34vh,360px)', css)
+        self.assertIn('min-height:clamp(360px,62vh,560px)', css)
         self.assertIn("greetingForHour", app)
         for greeting in ("Good morning", "Good afternoon", "Good evening", "Good night"):
             self.assertIn(greeting, app)
