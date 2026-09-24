@@ -92,8 +92,17 @@
         </div>
         <a class="composer" href="https://github.com/afnannuzulasugihartono/brain-dump/issues/new?template=idea.yml"><span>What's on your mind?</span><small>Write a note…</small></a>
       </section>
-      <div class="tools"><label class="search"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Search" autocomplete="off" aria-label="Search ideas"></label><div class="filters"><select id="categoryFilter" aria-label="Filter by category"><option value="all">Category</option></select><select id="stageFilter" aria-label="Filter by stage"><option value="all">Stage</option></select></div></div>
-      <p id="activeFilters" class="filter-note" hidden></p>
+      <div id="workspaceBar" class="workspace-bar">
+        <div id="workspaceHeading" class="workspace-heading">
+          <div class="workspace-title-group">
+            <span class="workspace-eyebrow">Workspace</span>
+            <h1 id="workspaceTitle">Board</h1>
+          </div>
+          <span id="workspaceCount" class="workspace-count">0 ideas</span>
+        </div>
+        <div class="tools"><label class="search"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Search" autocomplete="off" aria-label="Search ideas"></label><div class="filters"><select id="categoryFilter" aria-label="Filter by category"><option value="all">Category</option></select><select id="stageFilter" aria-label="Filter by stage"><option value="all">Stage</option></select></div></div>
+        <p id="activeFilters" class="filter-note" hidden></p>
+      </div>
       <section id="notesView" class="view active"></section>
       <section id="reviewView" class="view"></section>
       <section id="boardView" class="view"></section>
@@ -110,6 +119,6 @@
     <button class="view-link" data-view="calendar" type="button">Calendar</button>
   </nav>
   <template id="emptyTemplate"><div class="empty"><strong>No notes yet.</strong><span>Try another filter or jot something down.</span></div></template>
-  <script type="module" src="./js/app.js?v=20260924-sync1"></script>
+  <script type="module" src="./js/app.js?v=20260924-workspace1"></script>
 </body>
 </html>
