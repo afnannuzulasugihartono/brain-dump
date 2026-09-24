@@ -140,6 +140,11 @@ class StaticUITests(unittest.TestCase):
         self.assertRegex(app, r'\$\$\("\.theme-toggle"\)\.forEach\(initTheme\);')
         self.assertNotRegex(app, r'(?<!\$)\$\("\.theme-toggle"\)\.forEach\(initTheme\);')
 
+    def test_entry_script_url_is_cache_busted(self):
+        html = HTML.read_text(encoding="utf-8")
+        self.assertRegex(html, r'<script type="module" src="\./js/app\.js\?v=[^"]+"></script>')
+        self.assertNotIn('<script type="module" src="./js/app.js"></script>', html)
+
     def test_desktop_sidebar_supports_chatgpt_style_collapsed_rail(self):
         html = HTML.read_text(encoding="utf-8")
         css = all_css().replace(" ", "").replace("\n", "")
