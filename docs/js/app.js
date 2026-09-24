@@ -77,10 +77,12 @@ function initBootIntro() {
 
 function updateNotesScrollTransition() {
   const main=$(".main");
-  if (!main) return;
+  const chrome=$("#notesChrome");
+  if (!main || !chrome) return;
 
   if (state.view !== "notes") {
     main.style.removeProperty("--notes-chrome-opacity");
+    chrome.classList.remove("is-transparent");
     return;
   }
 
@@ -90,6 +92,7 @@ function updateNotesScrollTransition() {
   const visible=1-progress;
 
   main.style.setProperty("--notes-chrome-opacity",visible.toFixed(3));
+  chrome.classList.toggle("is-transparent",visible <= 0.06);
 }
 
 function requestNotesScrollTransition() {
