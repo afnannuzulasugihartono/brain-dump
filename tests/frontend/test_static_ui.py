@@ -151,6 +151,12 @@ class StaticUITests(unittest.TestCase):
         self.assertNotIn('<script type="module" src="./js/app.js"></script>', html)
 
 
+    def test_primary_stylesheet_url_is_cache_busted(self):
+        html = HTML.read_text(encoding="utf-8")
+        self.assertRegex(html, r'<link rel="stylesheet" href="\./styles/app\.css\?v=[^"]+">')
+        self.assertNotIn('<link rel="stylesheet" href="./styles/app.css">', html)
+
+
     def test_non_notes_views_use_full_workspace_header(self):
         html = HTML.read_text(encoding="utf-8")
         css = all_css().replace(" ", "").replace("\n", "")
