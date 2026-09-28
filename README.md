@@ -9,7 +9,13 @@ A small place for notes and ideas.
 <!-- TIMELINE:START -->
 ## Recent ideas
 
-_11 ideas · 10 open_
+_12 ideas · 11 open_
+
+### 28 Sep 2026 · [#19 Android Agent — control HP from AI chat in real time](https://github.com/afnannuzulasugihartono/brain-dump/issues/19)
+
+No context added yet.
+
+**Inbox** · Other · Open
 
 ### 24 Sep 2026 · [#18 [Project] Indonesia 2.0 — Corruption & Integrity](https://github.com/afnannuzulasugihartono/brain-dump/issues/18)
 
@@ -53,13 +59,7 @@ Many productive opportunities fail to connect because demand, available capacity
 
 **Exploring** · Product · Open
 
-### 24 Sep 2026 · [#11 Per-idea history and lifecycle](https://github.com/afnannuzulasugihartono/brain-dump/issues/11)
-
-History makes Brain Dump useful as a memory of how ideas developed, not just a list of their current state. It should live inside each idea rather than becoming another sidebar destination.
-
-**Exploring** · Software · Open
-
-[View all 11 ideas →](TIMELINE.md)
+[View all 12 ideas →](TIMELINE.md)
 <!-- TIMELINE:END -->
 
 ## Workflow

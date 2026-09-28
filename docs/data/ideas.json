@@ -2,6 +2,20 @@
   "source": "GitHub Issues",
   "ideas": [
     {
+      "number": 19,
+      "title": "Android Agent — control HP from AI chat in real time",
+      "url": "https://github.com/afnannuzulasugihartono/brain-dump/issues/19",
+      "state": "open",
+      "stage": "Inbox",
+      "category": "Other",
+      "why": "",
+      "idea": "Membuat **Android Agent** yang memungkinkan AI/chat mengendalikan HP Android hampir secara realtime.",
+      "aiNotes": "",
+      "createdAt": "2026-09-28T04:54:03Z",
+      "updatedAt": "2026-09-28T04:54:03Z",
+      "closedAt": null
+    },
+    {
       "number": 18,
       "title": "[Project] Indonesia 2.0 — Corruption & Integrity",
       "url": "https://github.com/afnannuzulasugihartono/brain-dump/issues/18",

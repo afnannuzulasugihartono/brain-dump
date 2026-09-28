@@ -4,6 +4,12 @@ A complete chronological feed generated from GitHub Issues.
 
 ## All ideas
 
+### 28 Sep 2026 · [#19 Android Agent — control HP from AI chat in real time](https://github.com/afnannuzulasugihartono/brain-dump/issues/19)
+
+No context added yet.
+
+**Inbox** · Other · Open
+
 ### 24 Sep 2026 · [#18 [Project] Indonesia 2.0 — Corruption & Integrity](https://github.com/afnannuzulasugihartono/brain-dump/issues/18)
 
 Information about corruption cases is often scattered across news reports, court records, government releases, and watchdog publications. A structured, searchable, source-linked website could make public-interest information easier to follow and compare over time.
